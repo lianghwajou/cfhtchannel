@@ -42,22 +42,25 @@ app.post('/channel/admin_ui', (req, res)=>{
   zendesk.admin_ui(req, res);
 });
 
-app.post('/channel/admin_ui_2', (req, res)=>{
+app.post('/channel/admin_ui_2', async (req, res)=>{
+  await setupBot(req.body.token);
   zendesk.admin_ui_2(req, res);
 });
 
 
+async function setupBot(token) {
+  const { Bot } = require('./bot');
+  const bot = new Bot(token, zendesk);
+  await bot.asyncInit(false);
+  app.post(config.botPath, bot.botHandler.bind(bot));
 
+  zendesk.bot = bot;
 
-const { Bot } = require('./bot');
-const bot = new Bot(config.botToken, zendesk);
-app.post(config.botPath, bot.botHandler.bind(bot));
+  app.post('/channel/pull', (req,res)=>{
+    zendesk.pull(req, res);
+  }); 
+}
 
-zendesk.bot = bot;
-
-app.post('/channel/pull', (req,res)=>{
-  zendesk.pull(req, res);
-});
 
 app.post('/channel/channelback', (req, res)=>{
   zendesk.channelback(req, res);

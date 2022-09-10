@@ -16,7 +16,6 @@ class Bot {
         this.#client = createClient();
         this.#client.on('error', (err) => console.log('Redis Client Error', err));
         this.#apiUrl = botApiEndpoint + this.#token
-        this.#asyncInit();
     }
 
     async #setWebhook(domain, path) {
@@ -24,9 +23,18 @@ class Bot {
         let res = await fetch(url);
     }
 
-    async #asyncInit () {
+    async #deleteWebhook() {
+        let url = this.#apiUrl + '/deleteWebHook?';
+        let res = await fetch(url);
+    }
+
+    async asyncInit (enableWebhook) {
         await this.#client.connect();
-        await this.#setWebhook(config.botDomain, config.botPath);
+        if (enableWebhoot) {
+            await this.#setWebhook(config.botDomain, config.botPath);
+        } else {
+            await this.#deleteWebhook();
+        }
     }
     
     async botHandler (req, res) {

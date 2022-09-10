@@ -3,6 +3,7 @@ const { config, manifest } = require('./config');
 class Zendesk {
 
     #bot;
+    #botToken;
 
     constructor () {
         
@@ -102,6 +103,7 @@ class Zendesk {
 
     admin_ui_2 (req, res) {
         let data = req.body;
+        this.#botToken = data.token;
         let metadata = JSON.stringify({
             token: data.token
         });
