@@ -1,0 +1,16 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        meta(http-equiv='X-UA-Compatible' content='ie=edge')
+        title CFHT Telegram Channel
+        link(rel='stylesheet' type="text/css" href='/stylesheets/style.css')
+    body
+        form#finish(role='form' method='POST' action=return_url)
+            input#name.form-control(type='hidden', name='name' value= name)
+            input#metadata.form-control(type='hidden', name='metadata' value= metadata)
+        script.
+            // Post the form
+            var form = document.forms['finish'];
+            form.submit();

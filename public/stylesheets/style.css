@@ -1,0 +1,19 @@
+/* body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+} */
+
+body {
+  padding:20px;
+  margin:10px;
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:13px;
+}
+
+input {
+  margin-bottom: 10px;
+}

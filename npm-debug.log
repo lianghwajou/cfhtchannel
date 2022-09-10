@@ -1,0 +1,91 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/vagrant/.nvm/versions/node/v5.7.0/bin/node',
+1 verbose cli   '/home/vagrant/.nvm/versions/node/v5.7.0/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   'telegraf' ]
+2 info using npm@3.6.0
+3 info using node@v5.7.0
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly fetchPackageMetaData telegraf
+8 silly fetchNamedPackageData telegraf
+9 silly mapToRegistry name telegraf
+10 silly mapToRegistry using default registry
+11 silly mapToRegistry registry https://registry.npmjs.org/
+12 silly mapToRegistry uri https://registry.npmjs.org/telegraf
+13 verbose request uri https://registry.npmjs.org/telegraf
+14 verbose request no auth needed
+15 info attempt registry request try #1 at 1:51:04 PM
+16 verbose request id e959b94c1dc5a00b
+17 verbose etag W/"15fa2ad5431e121d2aafb59c2c4e8d6a"
+18 verbose lastModified Mon, 29 Aug 2022 12:17:16 GMT
+19 http request GET https://registry.npmjs.org/telegraf
+20 http 304 https://registry.npmjs.org/telegraf
+21 verbose headers { date: 'Wed, 31 Aug 2022 13:51:04 GMT',
+21 verbose headers   connection: 'keep-alive',
+21 verbose headers   'cf-ray': '74363d234c0b985e-SJC',
+21 verbose headers   'cache-control': 'public, max-age=300',
+21 verbose headers   etag: '"15fa2ad5431e121d2aafb59c2c4e8d6a"',
+21 verbose headers   'last-modified': 'Mon, 29 Aug 2022 12:17:16 GMT',
+21 verbose headers   vary: 'Accept-Encoding',
+21 verbose headers   'cf-cache-status': 'MISS',
+21 verbose headers   'x-amz-replication-status': 'COMPLETED',
+21 verbose headers   server: 'cloudflare' }
+22 silly get cb [ 304,
+22 silly get   { date: 'Wed, 31 Aug 2022 13:51:04 GMT',
+22 silly get     connection: 'keep-alive',
+22 silly get     'cf-ray': '74363d234c0b985e-SJC',
+22 silly get     'cache-control': 'public, max-age=300',
+22 silly get     etag: '"15fa2ad5431e121d2aafb59c2c4e8d6a"',
+22 silly get     'last-modified': 'Mon, 29 Aug 2022 12:17:16 GMT',
+22 silly get     vary: 'Accept-Encoding',
+22 silly get     'cf-cache-status': 'MISS',
+22 silly get     'x-amz-replication-status': 'COMPLETED',
+22 silly get     server: 'cloudflare' } ]
+23 verbose etag https://registry.npmjs.org/telegraf from cache
+24 verbose get saving telegraf to /home/vagrant/.npm/registry.npmjs.org/telegraf/.cache.json
+25 verbose correctMkdir /home/vagrant/.npm correctMkdir not in flight; initializing
+26 silly install normalizeTree
+27 silly loadCurrentTree Finishing
+28 silly loadIdealTree Starting
+29 silly install loadIdealTree
+30 silly cloneCurrentTree Starting
+31 silly install cloneCurrentTreeToIdealTree
+32 silly cloneCurrentTree Finishing
+33 silly loadShrinkwrap Starting
+34 silly install loadShrinkwrap
+35 silly loadShrinkwrap Finishing
+36 silly loadAllDepsIntoIdealTree Starting
+37 silly install loadAllDepsIntoIdealTree
+38 verbose stack Error: Missing required argument #1
+38 verbose stack     at andLogAndFinish (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/fetch-package-metadata.js:31:3)
+38 verbose stack     at fetchPackageMetadata (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/fetch-package-metadata.js:51:22)
+38 verbose stack     at resolveWithNewModule (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/install/deps.js:456:12)
+38 verbose stack     at /home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/install/deps.js:190:5
+38 verbose stack     at /home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:52:35
+38 verbose stack     at Array.forEach (native)
+38 verbose stack     at /home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:52:11
+38 verbose stack     at Array.forEach (native)
+38 verbose stack     at asyncMap (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:51:8)
+38 verbose stack     at exports.loadRequestedDeps (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/install/deps.js:188:3)
+39 verbose cwd /home/vagrant/cfhtchannel
+40 error Linux 5.4.0-117-generic
+41 error argv "/home/vagrant/.nvm/versions/node/v5.7.0/bin/node" "/home/vagrant/.nvm/versions/node/v5.7.0/bin/npm" "install" "telegraf"
+42 error node v5.7.0
+43 error npm  v3.6.0
+44 error code EMISSINGARG
+45 error typeerror Error: Missing required argument #1
+45 error typeerror     at andLogAndFinish (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/fetch-package-metadata.js:31:3)
+45 error typeerror     at fetchPackageMetadata (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/fetch-package-metadata.js:51:22)
+45 error typeerror     at resolveWithNewModule (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/install/deps.js:456:12)
+45 error typeerror     at /home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/install/deps.js:190:5
+45 error typeerror     at /home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:52:35
+45 error typeerror     at Array.forEach (native)
+45 error typeerror     at /home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:52:11
+45 error typeerror     at Array.forEach (native)
+45 error typeerror     at asyncMap (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:51:8)
+45 error typeerror     at exports.loadRequestedDeps (/home/vagrant/.nvm/versions/node/v5.7.0/lib/node_modules/npm/lib/install/deps.js:188:3)
+46 error typeerror This is an error with npm itself. Please report this error at:
+46 error typeerror     <http://github.com/npm/npm/issues>
+47 verbose exit [ 1, true ]

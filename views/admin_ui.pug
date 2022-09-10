@@ -1,0 +1,18 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        meta(http-equiv='X-UA-Compatible' content='ie=edge')
+        title CFHT Telegram Channel
+        link(rel='stylesheet' type="text/css" href='/stylesheets/style.css')
+    body
+        form(role='form' method='POST' action='./admin_ui_2')
+            div.form-group
+                label(for='name') Name:
+                input#name.form-control(placeholder='name' name='name' value= name )
+            div.form-group
+                label(for='token') Telegram Token:
+                input#token.form-control(placeholder='token' name='token' value= token )
+            input#return_url.form-control(type='hidden', name='return_url' value= return_url)
+            button.btn.btn-primary(type="submit") Submit
