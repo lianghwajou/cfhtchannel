@@ -102,12 +102,11 @@ class Zendesk {
 
     admin_ui_2 (req, res) {
         let data = req.body;
-        metadata = JSON.stringify({
-            name: data.name,
+        let metadata = JSON.stringify({
             token: data.token
         });
         let return_url = data.return_url;
-        res.render(admin_ui_2, {return_url: return_url}, (err, html)=>{
+        res.render('admin_ui_2', {name: data.name, metadata, return_url: return_url}, (err, html)=>{
             res.send(html);
         })
     }
