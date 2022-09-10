@@ -34,7 +34,6 @@ const zendesk = new Zendesk();
 
 // zendesk channel route
 app.get('/channel/manifest', (req, res)=>{
-  console.log(req);
   zendesk.manifest(res);
 });
 
@@ -42,23 +41,28 @@ app.post('/channel/admin_ui', (req, res)=>{
   zendesk.admin_ui(req, res);
 });
 
+//token, name, return_url
 app.post('/channel/admin_ui_2', async (req, res)=>{
-  await setupBot(req.body.token);
+  await setupBot(req.body.token, false);
   zendesk.admin_ui_2(req, res);
 });
 
 
-async function setupBot(token) {
+async function setupBot(token, useWebhook) {
+  console.log("asyncInit");
   const { Bot } = require('./bot');
   const bot = new Bot(token, zendesk);
-  await bot.asyncInit(false);
-  app.post(config.botPath, bot.botHandler.bind(bot));
-
   zendesk.bot = bot;
+  await bot.asyncInit(useWebhook);
+  if (useWebhook) {
+    app.post(config.botPath, bot.botHandler.bind(bot));
+  } else {
+    app.post('/channel/pull', (req,res)=>{
+      zendesk.pull(req, res);
+    }); 
 
-  app.post('/channel/pull', (req,res)=>{
-    zendesk.pull(req, res);
-  }); 
+  }
+
 }
 
 

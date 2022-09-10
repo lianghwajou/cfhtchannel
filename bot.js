@@ -19,18 +19,18 @@ class Bot {
     }
 
     async #setWebhook(domain, path) {
-        let url = this.#apiUrl + '/setWebHook?' + "url=" + domain + path;
+        let url = this.#apiUrl + '/setWebhook?' + "url=" + domain + path;
         let res = await fetch(url);
     }
 
     async #deleteWebhook() {
-        let url = this.#apiUrl + '/deleteWebHook?';
+        let url = this.#apiUrl + '/deleteWebhook';
         let res = await fetch(url);
     }
 
     async asyncInit (enableWebhook) {
-        await this.#client.connect();
-        if (enableWebhoot) {
+//        await this.#client.connect();
+        if (enableWebhook) {
             await this.#setWebhook(config.botDomain, config.botPath);
         } else {
             await this.#deleteWebhook();
