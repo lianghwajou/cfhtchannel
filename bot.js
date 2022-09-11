@@ -9,8 +9,10 @@ class Bot {
     #zendesk;
     #client;
     #apiUrl;
+    #updateId;
 
     constructor (token, zendesk) {
+        this.#updateId = 0;
         this.#token = token;
         this.#zendesk = zendesk;
         this.#client = createClient();
@@ -47,26 +49,33 @@ class Bot {
 
     async getMessages () {
         let url = this.#apiUrl+'/getUpdates';
+        if (this.#updateId) {
+            url += `?offset=${this.#updateId}`;
+        }
         // let response = await fetch(url, {timeout: 1, allowed_updates: ['message']});
         let response = await fetch(url);
         let data = await response.json();
         let updates = data.result;
         let messages = [];
         for(let update of updates) {
-            let message = update.message;
-            let user = message.from;
-            messages.push({
-                id: message.message_id,
-                text: message.text,
-                date: message.date,
-                chat_id: message.chat.id,
-                author: {
-                    id: user.id,
-                    username: (user.username)?user.username:'',
-                    first_name: user.first_name,
-                    last_name: (user.last_name)?user.last_name:''
-                },
-            })
+
+            if (update.update_id > this.#updateId) {
+                this.#updateId = update.update_id;
+                let message = update.message;
+                let user = message.from;
+                messages.push({
+                    id: message.message_id,
+                    text: message.text,
+                    date: message.date,
+                    chat_id: message.chat.id,
+                    author: {
+                        id: user.id,
+                        username: (user.username)?user.username:'',
+                        first_name: user.first_name,
+                        last_name: (user.last_name)?user.last_name:''
+                    },
+                })
+            }
         }
         return messages;
     }
