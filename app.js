@@ -24,10 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-
 const { config } = require('./config');
-
-
 
 const { Zendesk } = require('./zendesk');
 const zendesk = new Zendesk();
@@ -43,13 +40,12 @@ app.post('/channel/admin_ui', (req, res)=>{
 
 //token, name, return_url
 app.post('/channel/admin_ui_2', async (req, res)=>{
+  console.log(req.body.token);
   await setupBot(req.body.token, false);
   zendesk.admin_ui_2(req, res);
 });
 
-
 async function setupBot(token, useWebhook) {
-  console.log("asyncInit");
   const { Bot } = require('./bot');
   const bot = new Bot(token, zendesk);
   zendesk.bot = bot;
@@ -57,13 +53,13 @@ async function setupBot(token, useWebhook) {
   if (useWebhook) {
     app.post(config.botPath, bot.botHandler.bind(bot));
   } else {
-    app.post('/channel/pull', (req,res)=>{
-      zendesk.pull(req, res);
-    }); 
 
   }
-
 }
+
+app.post('/channel/pull', (req,res)=>{
+  zendesk.pull(req, res);
+}); 
 
 
 app.post('/channel/channelback', (req, res)=>{
@@ -72,18 +68,8 @@ app.post('/channel/channelback', (req, res)=>{
 
 // utility route
 app.post('/event_callback', (req, res)=>{
-  console.log('Event callback:');
-  console.log(req);
   res.sendStatus(200);
 });
-
-app.get('/channel/healthcheck', (req, res) => {
-  res.send('ok');
-});
-
-// app.post('/telegraf/7e248f4e35730bc3d9a39e15b0e8075dd3af712621fa3dcc3703fb673576afce', (req, res)=>{
-//   console.log("telegram update");
-// })
 
 
 function event_callback(req, res) {

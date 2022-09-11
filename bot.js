@@ -16,6 +16,7 @@ class Bot {
         this.#client = createClient();
         this.#client.on('error', (err) => console.log('Redis Client Error', err));
         this.#apiUrl = botApiEndpoint + this.#token
+        console.log(this.#token);
     }
 
     async #setWebhook(domain, path) {
@@ -46,19 +47,24 @@ class Bot {
 
     async getMessages () {
         let url = this.#apiUrl+'/getUpdates';
-                let response = await fetch(url, {timeout: 1, allowed_updates: ['message']});
-        let updates = response.body;
+        // let response = await fetch(url, {timeout: 1, allowed_updates: ['message']});
+        let response = await fetch(url);
+        let data = await response.json();
+        let updates = data.result;
         let messages = [];
         for(let update of updates) {
+            let message = update.message;
+            let user = message.from;
             messages.push({
-                id: update.message.message_id,
-                text: update.message.text,
-                date: update.message.date,
+                id: message.message_id,
+                text: message.text,
+                date: message.date,
+                chat_id: message.chat.id,
                 author: {
-                    id: update.user.id,
-                    name: update.from.username,
-                    first_name: update.from.first_name,
-                    last_name: update.from.last_name
+                    id: user.id,
+                    username: (user.username)?user.username:'',
+                    first_name: user.first_name,
+                    last_name: (user.last_name)?user.last_name:''
                 },
             })
         }

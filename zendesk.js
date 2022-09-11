@@ -16,22 +16,23 @@ class Zendesk {
     }
 
 
-    pull(req, res) {
-        let body = req.body;
-        let metadata = body.metadata;
-        let state  = body.state;
+    // pull(req, res) {
+    //     let body = req.body;
+    //     let metadata = body.metadata;
+    //     let state  = body.state;
 
-        this.#pullMessage (metadata, state, res);
-    }
+    //     this.#pullMessages (metadata, state, res);
+    // }
 
-    async findUser(author) {
-        return false;
-    }
+    // async findUser(author) {
+    //     return false;
+    // }
 
     async pull(req, res) {
-        let metadata = req.body.metadata;
-        let state = req.body.state;
-        let externalResources = await this.#pullMessage (metadata, state, res);
+        let metadata = JSON.parse(req.body.metadata);
+        let state = JSON.parse(req.body.state);
+        let externalResources = await this.#pullMessages (metadata, state, res);
+        console.log(externalResources);
         res.send({
             external_resources: externalResources,
             state: state,
@@ -40,26 +41,30 @@ class Zendesk {
         });
     }
 
-    async #pullMessage (metadata, state, res) {
+    async #pullMessages (metadata, state, res) {
         let messages =  await this.#bot.getMessages();
         let extResources = [];
         for (var message of messages) {
+            let authorName = message.author.first_name +  ' ' + message.author.last_name;
+            authorName = authorName.trim() + ' (' + message.author.username + ')'; 
             let extResource = {
                 external_id: 'telegram' + message.author.id.toString() + ':' + message.id,
                 message: message.text,
                 createdAt: (new Date(message.date)).toISOString(),
                 author: {
                     external_id: config.botId+ ':' + message.author.id.toString() + ':',
-                    name: message.author.username()
+                    name: authorName
                 },
-                allowChannelBack: yes,
+                allowChannelBack: true,
+                thread_id: message.chat_id
             };
-            let user = this.findUser(message.author);
-            if (user)  {
-                extResource.thread_id = 'telegram' + message.author.id.toString();
-            }
+            // let user = this.findUser(message.author);
+            // if (user)  {
+            //     extResource.thread_id = 'telegram' + message.author.id.toString();
+            // }
             extResources.push (extResource);
         }
+        return extResources;
     }
 
     channelback(req,res) {
@@ -103,6 +108,8 @@ class Zendesk {
 
     admin_ui_2 (req, res) {
         let data = req.body;
+
+        console.log(data);
         this.#botToken = data.token;
         let metadata = JSON.stringify({
             token: data.token

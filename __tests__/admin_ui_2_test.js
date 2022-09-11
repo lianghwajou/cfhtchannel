@@ -1,6 +1,5 @@
 const request = require("supertest");
 const nock = require("nock");
-const express = require("express");
 const app = require("../app");
 
 const botApiEndpoint = 'https://api.telegram.org/bot';
