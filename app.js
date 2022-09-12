@@ -40,34 +40,53 @@ app.post('/channel/admin_ui', (req, res)=>{
 
 //token, name, return_url
 app.post('/channel/admin_ui_2', async (req, res)=>{
-  console.log(req.body.token);
-  await setupBot(req.body.token, false);
+  setupBot(req, false);
   zendesk.admin_ui_2(req, res);
 });
 
-async function setupBot(token, useWebhook) {
+function resetBot(req, useWebhook) {
+  if (!zendesk.bot) {
+    let token = '';
+    if (req.body.metadata) {
+      let metadata = JSON.parse(req.body.metadata);
+      token = metadata.token;
+    }
+    const { Bot } = require('./bot');
+    const bot = new Bot(token, zendesk);
+    zendesk.bot = bot;
+    bot.asyncInit(useWebhook);
+    if (useWebhook) {
+      app.post(config.botPath, bot.botHandler.bind(bot));
+    }
+  }
+}
+
+function setupBot(req, useWebhook) {
+  token = req.body.token;
   const { Bot } = require('./bot');
   const bot = new Bot(token, zendesk);
   zendesk.bot = bot;
-  await bot.asyncInit(useWebhook);
+  bot.asyncInit(useWebhook);
   if (useWebhook) {
     app.post(config.botPath, bot.botHandler.bind(bot));
-  } else {
-
   }
 }
 
 app.post('/channel/pull', (req,res)=>{
+  resetBot(req, false);
   zendesk.pull(req, res);
 }); 
 
 
 app.post('/channel/channelback', (req, res)=>{
+  resetBot(req, false);
   zendesk.channelback(req, res);
 });
 
 // utility route
-app.post('/event_callback', (req, res)=>{
+app.post('/channel/event_callback', (req, res)=>{
+  console.log("Event callback");
+  console.log(req.body);
   res.sendStatus(200);
 });
 

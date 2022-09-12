@@ -18,7 +18,6 @@ class Bot {
         this.#client = createClient();
         this.#client.on('error', (err) => console.log('Redis Client Error', err));
         this.#apiUrl = botApiEndpoint + this.#token
-        console.log(this.#token);
     }
 
     async #setWebhook(domain, path) {
@@ -28,6 +27,7 @@ class Bot {
 
     async #deleteWebhook() {
         let url = this.#apiUrl + '/deleteWebhook';
+        console.log(url);
         let res = await fetch(url);
     }
 
@@ -45,6 +45,27 @@ class Bot {
         console.log("bot handler");
         console.log(req.body.message);
         let msgResp = await this.sendMessage(req.body.message.chat.id, req.body.message.text+' reply');
+    }
+
+    async sendMessage (chatId, text) {
+        let url = `${this.#apiUrl}/sendMessage?chat_id=${chatId}&text=${text}`;
+        let response = await fetch(url);
+        let data = await response.json();
+        console.log(data);
+        let message = data.result;
+        let user = message.from;
+        return {
+            id: message.message_id,
+            text: message.text,
+            date: message.date,
+            chat_id: message.chat.id,
+            author: {
+                id: user.id,
+                username: (user.username)?user.username:'',
+                first_name: user.first_name,
+                last_name: (user.last_name)?user.last_name:''
+            },
+        };
     }
 
     async getMessages () {
@@ -80,17 +101,17 @@ class Bot {
         return messages;
     }
 
-    async sendMessage (chat_id, text) {
-        let url = this.#apiUrl+'/sendMessage';
-        let body = {chat_id, text};
-        let response = await fetch(url, {
-            method: "post",
-            body: JSON.stringify(body),
-            headers: {'Content-Type': 'application/json'}
-        });
-        console.log(response);
-        let data = await response.json();
-    }
+    // async sendMessage (chat_id, text) {
+    //     let url = this.#apiUrl+'/sendMessage';
+    //     let body = {chat_id, text};
+    //     let response = await fetch(url, {
+    //         method: "post",
+    //         body: JSON.stringify(body),
+    //         headers: {'Content-Type': 'application/json'}
+    //     });
+    //     console.log(response);
+    //     let data = await response.json();
+    // }
 
     getTicket(username) {
         let ticket = zendesk.getTicketByUser(username);

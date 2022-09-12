@@ -16,9 +16,10 @@ const manifest = {
     channelback_files: false,
     create_followup_tickets: true,
     urls: {
-        admin_ui: './channel/admin_ui',
-        pull_url: './channel/pull',
-        channelback_url: './channel/channelback',
+        admin_ui: '/channel/admin_ui',
+        pull_url: '/channel/pull',
+        channelback_url: '/channel/channelback',
+        event_callback_url: '/channel/event_callback'
 //        click_through: './channel/click_through',
 //        about_url: './channel/about',
 //        dashboard_url: ''

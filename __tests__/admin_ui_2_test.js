@@ -12,7 +12,7 @@ describe('unit testing /channel/admin_ui_2 route', function() {
           .get('/deleteWebhook')
           .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});
     })
-    it('should return the expected json response', async function(){
+    it('should return html string', async function(){
       const response = await request(app)
                               .post("/channel/admin_ui_2")
                               .send("name=testform&return_url=http://zendesk.com&token="+botToken)

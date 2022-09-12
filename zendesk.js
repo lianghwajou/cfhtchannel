@@ -29,15 +29,14 @@ class Zendesk {
     // }
 
     async pull(req, res) {
-        let metadata = JSON.parse(req.body.metadata);
-        let state = JSON.parse(req.body.state);
+        let metadata = (req.body.metadata)?JSON.parse(req.body.metadata):{};
+        let state = (req.body.state)?JSON.parse(req.body.state):{};
         let externalResources = await this.#pullMessages (metadata, state, res);
-        console.log(externalResources);
         res.send({
             external_resources: externalResources,
-            state: state,
+            state: JSON.stringify(state),
             metadata_needs_update: true,
-            metadata: metadata
+            metadata: JSON.stringify(metadata)
         });
     }
 
@@ -50,13 +49,13 @@ class Zendesk {
             let extResource = {
                 external_id: 'telegram' + message.author.id.toString() + ':' + message.id,
                 message: message.text,
-                createdAt: (new Date(message.date)).toISOString(),
+                created_at: (new Date(message.date)).toISOString(),
                 author: {
-                    external_id: config.botId+ ':' + message.author.id.toString() + ':',
+                    external_id: config.botId+ ':' + message.author.id.toString() + ':'  + message.author.username,
                     name: authorName
                 },
                 allowChannelBack: true,
-                thread_id: message.chat_id
+                thread_id: message.chat_id.toString()
             };
             // let user = this.findUser(message.author);
             // if (user)  {
@@ -67,8 +66,12 @@ class Zendesk {
         return extResources;
     }
 
-    channelback(req,res) {
-
+    async channelback(req,res) {
+        let message = await this.#bot.sendMessage(req.body.thread_id, req.body.message);
+        res.send({
+            external_id: 'telegram' + message.author.id.toString() + ':' + message.id,
+            allow_channelback: true
+        })
     }
 
 
@@ -91,8 +94,9 @@ class Zendesk {
     }
 
     admin_ui (req, res) {
-        let name = req.body.name;
-        let metadata = JSON.parse(req.body.metadata);
+        let name = (req.body.name)?req.body.name:'';
+        let metadata = (req.body.metadata)?JSON.parse(req.body.metadata):{};
+        let state = (req.body.state)?JSON.parse(req.body.state):{};
         if (!name) {
             // New account
             name = config.name;
