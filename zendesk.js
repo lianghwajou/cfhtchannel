@@ -100,11 +100,13 @@ class Zendesk {
                 created_at: (new Date(message.date)).toISOString(),
                 author: {
                     external_id: this.#userExtId(message.author.id, message.author.username),
-                    name: authorName
+                    name: authorName,
+                    fields: [{id:'text_field_key', value: 'CFHT user'}]
                 },
                 internal_note: false,
                 allow_channelback: true,
-                thread_id: message.chat_id.toString()
+                thread_id: message.chat_id.toString(),
+                fields: [{id:'text_field', value: 'CFHT'}]
             };
             // let user = this.findUser(message.author);
             // if (user)  {

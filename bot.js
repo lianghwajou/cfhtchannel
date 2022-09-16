@@ -59,6 +59,9 @@ class Bot {
         let url = `${this.#apiUrl}/sendMessage?chat_id=${chatId}&text=${text}`;
         let response = await fetch(url);
         let data = await response.json();
+
+
+console.log(data);
         let message = data.result;
         let user = message.from;
         return {

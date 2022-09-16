@@ -11,7 +11,7 @@ const subdomain = "https://zyz.zendesk.com";
 describe('unit testing webhook route', function() {
   describe('testing push', function(){
     beforeAll(function(){
-      let fake_push_api = nock(subdomain)
+      let fake_push_api = nock(`https://${subdomain}.zendesk.com`)
           .post("/api/v2/any_channel/push")
           .reply(200);
       let fake_deleteWebhook_api = nock(botApiEndpoint+botToken)
