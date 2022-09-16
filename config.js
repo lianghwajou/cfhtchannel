@@ -1,7 +1,8 @@
 const config = {
     name: 'CFHT Telegram Channel Services',
+    useWebhook: true,
     botToken: '5492482664:AAF95og2FW79pQ2lfX4tKsBq7qo7ZVuqU20',
-    botDomain: 'https://626a-73-223-169-83.ngrok.io',
+    botDomain: 'https://cf67-73-223-169-83.ngrok.io',
     botPath: '/cfhtbot',
     botPort: 443,
     botId: '12345'
@@ -15,6 +16,7 @@ const manifest = {
 //    push_client_id: '',
     channelback_files: false,
     create_followup_tickets: true,
+    push_client_id: 'cfht_telegram_channel_services',
     urls: {
         admin_ui: '/channel/admin_ui',
         pull_url: '/channel/pull',

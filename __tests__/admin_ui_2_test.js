@@ -11,11 +11,16 @@ describe('unit testing /channel/admin_ui_2 route', function() {
       let fake_api = nock(botApiEndpoint+botToken)
           .get('/deleteWebhook')
           .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});
+      let fake_setWebhook_api = nock(botApiEndpoint+botToken)
+          .get('/setWebhook')
+          .query(true)
+          .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});
+
     })
     it('should return html string', async function(){
       const response = await request(app)
                               .post("/channel/admin_ui_2")
-                              .send("name=testform&return_url=http://zendesk.com&token="+botToken)
+                              .send("name=testform&return_url=http://zendesk.com&metadata={}&token="+botToken)
                               .set("ACCEPT", "application/x-www-form-urlencoded");
       expect(response.statusCode).toBe(200);
         

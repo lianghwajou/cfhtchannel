@@ -12,8 +12,13 @@ describe('unit testing /channel/pull route', function() {
       let fake_deleteWebhook_api = nock(botApiEndpoint+botToken)
           .get('/deleteWebhook')
           .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});
+      let fake_setWebhook_api = nock(botApiEndpoint+botToken)
+          .get('/setWebhook')
+          .query(true)
+          .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});
       let fake_get_updates_api = nock(botApiEndpoint+botToken)
           .get('/getUpdates')
+          .query(true)
           .reply(200, {
                         "ok": true,
                         "result":[{
@@ -40,6 +45,7 @@ describe('unit testing /channel/pull route', function() {
       //                         .send("name=testform&return_url=http://zendesk.com&token="+botToken)
       //                         .set("ACCEPT", "application/x-www-form-urlencoded");
       // expect(admin_ui_2_response.statusCode).toBe(200);
+
       const pull_response = await request(app)
                               .post("/channel/pull")
                               .send("state={}&metadata={\"token\":\""+botToken+"\"}")

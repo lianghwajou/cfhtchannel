@@ -28,6 +28,13 @@ const { config } = require('./config');
 
 const { Zendesk } = require('./zendesk');
 const zendesk = new Zendesk();
+const { Bot } = require('./bot');
+const bot = new Bot(zendesk);
+zendesk.bot = bot;
+
+if (config.useWebhook) {
+  app.post(config.botPath, bot.botHandler.bind(bot));
+}
 
 // zendesk channel route
 app.get('/channel/manifest', (req, res)=>{
@@ -40,46 +47,33 @@ app.post('/channel/admin_ui', (req, res)=>{
 
 //token, name, return_url
 app.post('/channel/admin_ui_2', async (req, res)=>{
-  setupBot(req, false);
+  // setupBot(req, config.useWebhook);
   zendesk.admin_ui_2(req, res);
 });
 
-function resetBot(req, useWebhook) {
-  if (!zendesk.bot) {
-    let token = '';
-    if (req.body.metadata) {
-      let metadata = JSON.parse(req.body.metadata);
-      token = metadata.token;
-    }
-    const { Bot } = require('./bot');
-    const bot = new Bot(token, zendesk);
-    zendesk.bot = bot;
-    bot.asyncInit(useWebhook);
-    if (useWebhook) {
-      app.post(config.botPath, bot.botHandler.bind(bot));
-    }
-  }
-}
+// function resetBot(req, useWebhook) {
+//   let token = '';
+//   if (req.body.metadata) {
+//     let metadata = JSON.parse(req.body.metadata);
+//     bot.token = metadata.token;
+//   }
+//   bot.asyncInit(useWebhook);
+// }
 
-function setupBot(req, useWebhook) {
-  token = req.body.token;
-  const { Bot } = require('./bot');
-  const bot = new Bot(token, zendesk);
-  zendesk.bot = bot;
-  bot.asyncInit(useWebhook);
-  if (useWebhook) {
-    app.post(config.botPath, bot.botHandler.bind(bot));
-  }
-}
+// function setupBot(req, useWebhook) {
+//   token = req.body.token;
+//   bot.token = token;
+//   bot.asyncInit(useWebhook);
+// }
 
 app.post('/channel/pull', (req,res)=>{
-  resetBot(req, false);
+  // resetBot(req, config.useWebhook);
   zendesk.pull(req, res);
 }); 
 
 
 app.post('/channel/channelback', (req, res)=>{
-  resetBot(req, false);
+  // resetBot(req, config.useWebhook);
   zendesk.channelback(req, res);
 });
 
@@ -89,11 +83,6 @@ app.post('/channel/event_callback', (req, res)=>{
   console.log(req.body);
   res.sendStatus(200);
 });
-
-
-function event_callback(req, res) {
-
-}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
