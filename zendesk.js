@@ -1,6 +1,8 @@
-const { config, manifest } = require('./config');
+const { Config } = require('./config');
+const config = Config.config;
 const fetch = require('node-fetch');
 const pushEndpoint = '/api/v2/any_channel/push'
+const { Message } = require('./message');
 
 class Zendesk {
 
@@ -26,6 +28,9 @@ class Zendesk {
         }
     }
 
+    get subdomain () {
+        return this.#subdomain;
+    }
 
     // pull(req, res) {
     //     let body = req.body;
@@ -39,13 +44,13 @@ class Zendesk {
     //     return false;
     // }
 
-    #externalId (userId, messageId) {
-        return `telegram:${userId}:${messageId}`;
-    }
+    // #externalId (userId, messageId) {
+    //     return `telegram:${userId}:${messageId}`;
+    // }
 
-    #userExtId (userId, username) {
-        return `${this.#botId}:${userId}:${username}`;
-    }
+    // #userExtId (userId, username) {
+    //     return `${this.#botId}:${userId}:${username}`;
+    // }
 
     #readMetadata (metadataStr) {
         if (metadataStr && !this.#metadata) {
@@ -74,61 +79,102 @@ class Zendesk {
                 metadata: JSON.stringify(this.#metadata)
             });
         } else {
-            let externalResources = await this.#pullMessages ();
+            let externalResources = [];
+            let messages = await this.#bot.getMessages();
+            for (let message of messages) {
+                externalResources.push(message.extResource);
+            }
             res.send({
                 external_resources: externalResources,
-                state: JSON.stringify(state),
+                // state: JSON.stringify(state),
                 metadata_needs_update: false,
                 metadata: JSON.stringify(this.#metadata)
             });
         }
     }
 
-    async #pullMessages () {
-        let messages =  await this.#bot.getMessages();
-        return this.#buildExtResources(messages);
-    }
+    // async #pullMessages () {
+    //     let messages =  await this.#bot.getMessages();
+    //     return this.#buildExtResources(messages);
+    // }
 
-    #buildExtResources (messages) {
-        let extResources = [];
-        for (var message of messages) {
-            let authorName = message.author.first_name +  ' ' + message.author.last_name;
-            authorName = authorName.trim() + ' (' + message.author.username + ')'; 
-            let extResource = {
-                external_id: this.#externalId(message.author.id.toString(),message.id),
-                message: message.text,
-                created_at: (new Date(message.date)).toISOString(),
-                author: {
-                    external_id: this.#userExtId(message.author.id, message.author.username),
-                    name: authorName,
-                    fields: [{id:'text_field_key', value: 'CFHT user'}]
-                },
-                internal_note: false,
-                allow_channelback: true,
-                thread_id: message.chat_id.toString(),
-                fields: [{id:'text_field', value: 'CFHT'}]
-            };
-            // let user = this.findUser(message.author);
-            // if (user)  {
-            //     extResource.thread_id = 'telegram' + message.author.id.toString();
-            // }
-            extResources.push (extResource);
-        }
-        return extResources;
-    }
+    // #buildUserFields (answers) {
+    //     let fields = {
+    //         user: [],
+    //         ticket:[]
+    //     };
+    //     if (!answers) return fields;
+    //     for (let answer of answers) {
+    //         switch(answer.form) {
+    //         case "user":
+    //             fields.user.push{
+    //                 id: field.fieldId,
+    //                 value: content                    
+    //             }
+    //             break;
+    //         case "ticket":
+    //             fields.ticket.push{
+    //                 id: field.fieldId,
+    //                 value: content                    
+    //             }
+    //             break;
+    //         }
+    //     }
+    //     return fields;
+    // }
+
+    // #buildExtResource(extMessage) {
+    //     let message = extMessage.message;
+    //     let fields = this.#buildFields(extMessage.answers);
+    //     let authorName = message.author.first_name +  ' ' + message.author.last_name;
+    //     authorName = authorName.trim() + ' (' + message.author.username + ')'; 
+    //     let extResource = {
+    //         external_id: this.#externalId(message.author.id.toString(),message.id),
+    //         message: message.text,
+    //         created_at: (new Date(message.date)).toISOString(),
+    //         author: {
+    //             external_id: this.#userExtId(message.author.id, message.author.username),
+    //             name: authorName,
+    //             fields: [{id:'text_field_key', value: 'CFHT user'}]
+    //         },
+    //         internal_note: false,
+    //         allow_channelback: true,
+    //         thread_id: message.chat_id.toString(),
+    //         fields: [{id:'text_field', value: 'CFHT'}]
+    //     };
+    //     if (field.user.length) {
+    //         extResource.author.fields = field.user;
+    //     }
+    //     if (field.ticket.length) {
+    //         extResource.fields = field.ticket;
+    //     }
+    //     return extResource;
+    // }
+
+    // #buildExtResources (extMessages) {
+    //     let extResources = [];
+    //     for (var extMessage of extMessages) {
+    //         extResources.push (this.#buildExtResource(extMessage));
+    //     }
+    //     return extResources;
+    // }
 
     async channelback(req,res) {
         this.#readMetadata(req.body.metadata); 
-        let message = await this.#bot.sendMessage(req.body.thread_id, req.body.message);
-        res.send({
-            external_id: this.#externalId(message.author.id.toString(),message.id),
-            allow_channelback: true
-        })
+        let results = await this.#bot.sendMessage(req.body.thread_id, req.body.message);
+        if (results.ok) {
+            res.send({
+                external_id: results.message.extId,
+                allow_channelback: true
+            })
+        } else {
+            res.send(400);
+        }
     }
 
-    async push (messages) {
-        let url = `https://${this.#subdomain}.zendesk.com${pushEndpoint}`;
-        let extResources = this.#buildExtResources(messages);
+    async push (message) {
+        let url = `https://${this.subdomain}.zendesk.com${pushEndpoint}`;
+        let extResources = [message.extResource];
         let body = {
             instance_push_id: this.#instance_push_id,
             external_resources: extResources
@@ -142,17 +188,16 @@ class Zendesk {
             headers: headers
         });
         const data = await response.json();
-        console.log(data);
     }
 
     manifest (res) {
-        res.json(manifest);
+        res.json(Config.manifest);
 
     }
 
-    healthCheck(redis, res) {
-        res.send('Zendesk ok');
-    }
+    // healthCheck(redis, res) {
+    //     res.send('Zendesk ok');
+    // }
 
     // admin_ui: return a html form for Zendesk to display in account 
     // creation. The form will be submitted to amdin_ui_2 endpoint
@@ -193,7 +238,6 @@ class Zendesk {
         if (!this.#metadata.token) {
             this.#metadata.token = '';
         }
-console.log("admin_ui metadata=%o", this.#metadata);       
         res.render('admin_ui', {name: this.#name, token: this.#metadata.token, metadata: JSON.stringify(this.#metadata), return_url: this.#return_url}, (err, html) => {
             res.send(html);
         });

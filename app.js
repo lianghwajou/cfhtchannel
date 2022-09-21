@@ -24,7 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-const { config } = require('./config');
+const { Config } = require('./config');
+const config = Config.config;
 
 const { Zendesk } = require('./zendesk');
 const zendesk = new Zendesk();

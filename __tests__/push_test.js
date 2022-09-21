@@ -1,19 +1,23 @@
 const request = require("supertest");
 const nock = require("nock");
 const app = require("../app");
+const { Zendesk } = require("../zendesk");
 
 const botApiEndpoint = 'https://api.telegram.org/bot';
 const botToken = '12345';
 const messageDate = (new Date()).getTime();
 const config = require("../config");
-const subdomain = "https://zyz.zendesk.com";
+const subdomain = "zyz";
 
 describe('unit testing webhook route', function() {
   describe('testing push', function(){
     beforeAll(function(){
+      Object.defineProperty(Zendesk, "subdomain", {
+        get: jest.fn(()=>dubdomain)
+      });
       let fake_push_api = nock(`https://${subdomain}.zendesk.com`)
           .post("/api/v2/any_channel/push")
-          .reply(200);
+          .reply(200, {ok: true});
       let fake_deleteWebhook_api = nock(botApiEndpoint+botToken)
           .get('/deleteWebhook')
           .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});

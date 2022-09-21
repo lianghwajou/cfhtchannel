@@ -22,6 +22,7 @@ describe('unit testing /channel/pull route', function() {
           .reply(200, {
                         "ok": true,
                         "result":[{
+                        "update_id": 10,
                         "message":{
                           "message_id": 11,
                           "text": "test message 1",
