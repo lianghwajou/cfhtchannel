@@ -1,9 +1,12 @@
+const debug = require('debug')('app:bot');
 const fetch = require('node-fetch');
 const { Update } = require('./update');
 const { Message } = require('./message');
 const { Config } =  require('./config');
 const config = Config.config;
 const { createClient } = require('redis');
+const { Session } = require('./session');
+const { Dialog } = require('./dialog');
 
 const botApiEndpoint = 'https://api.telegram.org/bot';
 
@@ -34,9 +37,6 @@ class Bot {
 
     async #setWebhook(domain, path) {
         let url = this.#apiUrl + '/setWebhook?' + "url=" + domain + path;
-
-
-        console.log(url);
         let res = await fetch(url);
     }
 
@@ -46,7 +46,6 @@ class Bot {
     }
 
     async asyncInit (enableWebhook) {
-//        await this.#client.connect();
         if (enableWebhook) {
             await this.#setWebhook(config.botDomain, config.botPath);
         } else {
@@ -55,10 +54,9 @@ class Bot {
     }
     
     async botHandler (req, res) {
+        debug("botHandler:", req);
         res.sendStatus(200);
         this.#processUpdate(req.body);
-        // let updates = [req.body];
-        // this.#zendesk.push(this.#buildMessages(updates));
     }
 
     async sendMessage (chatId, text) {
@@ -75,81 +73,24 @@ class Bot {
                 ok: data.ok
             }
         }
-        // let message = data.result;
-        // let user = message.from;
-        // return {
-        //     id: message.message_id,
-        //     text: message.text,
-        //     date: message.date,
-        //     chat_id: message.chat.id,
-        //     author: {
-        //         id: user.id,
-        //         username: (user.username)?user.username:'',
-        //         first_name: user.first_name,
-        //         last_name: (user.last_name)?user.last_name:''
-        //     },
-        // };
     }
 
     async #processUpdate (update) {
         let message = new Message(update.message);
-        this.#zendesk.push(message);
-        // let text = message.text;
-        // let entities = message.entities;
-        // let user = message.from;
-        // if (entities) {
-        //     for (let entity of entities) {
-        //         switch(entity.type) {
-        //             case ('bot_command'):
-        //                 switch(text.substr(entity.offset, entity.length)) {
-        //                     case "/start":
-        //                 }
-
-        //         }
-        //     }
-        // }
-        // let context = session.createOrGet(user.id);
-        // if (context.completeDialog) {
-        //     this.#zendesk.push(this.#buildMessages([update]));
-        // } else {
-        //     let dialog = new Dialog(context.dialogState);
-        //     context.dialogstate = dialog.run();
-        //     if (context.dialogstate.isCompleted()) {
-        //         // push to zendesk
-        //     } else {
-        //         // continue dialog
-        //         this.sendMessage(message.chat.id, context.dialogstate.message);
-        //     }
-
-        // }
-    }
-
-    #buildMessage (update) {
-        let message = update.message;
-        let user = message.from;
-        return ({
-            id: message.message_id,
-            text: message.text,
-            date: message.date,
-            chat_id: message.chat.id,
-            author: {
-                id: user.id,
-                username: (user.username)?user.username:'',
-                first_name: user.first_name,
-                last_name: (user.last_name)?user.last_name:''
-            },
-        });
-    }
-
-    #buildMessages (updates) {
-        let messages = [];
-        for(let update of updates) {
-            if (update.update_id > this.#updateId) {
-                this.#updateId = update.update_id;
-                messages.push(this.#buildMessage(update));
+        let ctx = this.#session.retrieve(message.userId);
+        let dialog = ctx.getProp("dialog");
+        if (dialog && dialog.isCompleted) {
+            // send to Zendesk
+            this.#zendesk.push(message.text);
+        } else {
+            if (!dialog) {
+                dialog = new Dialog();
             }
+            dialog.run();
+            this.sendMessage(message.chatId, dialog.message);
+            ctx.setProp("dialog", dialog);
+            this.#session.store(ctx);
         }
-        return messages;
     }
 
     async getMessages () {
@@ -167,26 +108,6 @@ class Bot {
             this.#updateId = latestUpdateId;
         }
         return Update.messageList(updates);
-        // return this.#buildMessages(updates);
-    }
-
-    // async sendMessage (chat_id, text) {
-    //     let url = this.#apiUrl+'/sendMessage';
-    //     let body = {chat_id, text};
-    //     let response = await fetch(url, {
-    //         method: "post",
-    //         body: JSON.stringify(body),
-    //         headers: {'Content-Type': 'application/json'}
-    //     });
-    //     console.log(response);
-    //     let data = await response.json();
-    // }
-
-    getTicket(username) {
-        let ticket = zendesk.getTicketByUser(username);
-        if (!ticket) {
-            ticket = zendesk.createTicket(username);
-        }
     }
 
     healthCheck (req, res) {
@@ -194,6 +115,4 @@ class Bot {
     }
 }
 
-
-// factory
 exports.Bot = Bot;;

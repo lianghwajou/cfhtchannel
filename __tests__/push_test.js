@@ -1,3 +1,14 @@
+jest.mock('../session');
+const { Session } = require('../session');
+jest.spyOn(Session.prototype, 'retrieve').
+  mockImplementation(() => {
+    const { Context } = require('../context');
+    let context = new Context("5251845982");
+    context.setProp("dialog", {isCompleted: true});
+    return context;
+  }
+);
+
 const request = require("supertest");
 const nock = require("nock");
 const app = require("../app");
@@ -6,15 +17,14 @@ const { Zendesk } = require("../zendesk");
 const botApiEndpoint = 'https://api.telegram.org/bot';
 const botToken = '12345';
 const messageDate = (new Date()).getTime();
-const config = require("../config");
 const subdomain = "zyz";
+Object.defineProperty(Zendesk, "subdomain", {
+  get: jest.fn(()=>dubdomain)
+});
 
 describe('unit testing webhook route', function() {
   describe('testing push', function(){
-    beforeAll(function(){
-      Object.defineProperty(Zendesk, "subdomain", {
-        get: jest.fn(()=>dubdomain)
-      });
+    beforeEach(function(){
       let fake_push_api = nock(`https://${subdomain}.zendesk.com`)
           .post("/api/v2/any_channel/push")
           .reply(200, {ok: true});
@@ -26,9 +36,9 @@ describe('unit testing webhook route', function() {
           .query(true)
           .reply(200, {"ok": true, "result": true, "description": "Webhook was deleted"});
     });
-    // it('should return the html string and setup pull route', async function(){
-    // });
-    it('should return push one message to Zendesk', async function(){
+    it('should return the html string and setup pull route', async function(){
+    });
+    it('Should push one message to Zendesk', async function(){
       const admin_ui_response = await request(app)
                               .post("/channel/admin_ui")
                               .send("name=testform&return_url=http://zendesk.com&token="+botToken+"&subdomain="+subdomain)

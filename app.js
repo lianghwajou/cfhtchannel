@@ -27,10 +27,12 @@ app.use('/users', usersRouter);
 const { Config } = require('./config');
 const config = Config.config;
 
+const { Session } = require('./session');
+const session = new Session(config.redisUrl);
 const { Zendesk } = require('./zendesk');
 const zendesk = new Zendesk();
 const { Bot } = require('./bot');
-const bot = new Bot(zendesk);
+const bot = new Bot(zendesk, session);
 zendesk.bot = bot;
 
 if (config.useWebhook) {
