@@ -1,3 +1,4 @@
+const debug = require('debug')('app:zendesk')
 const { Config } = require('./config');
 const config = Config.config;
 const fetch = require('node-fetch');
@@ -182,12 +183,17 @@ class Zendesk {
         let headers= {'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.#zendesk_access_token
         }
-        const response = await fetch(url, {
-            method: 'post',
-            body: JSON.stringify(body),
-            headers: headers
-        });
-        const data = await response.json();
+        debug('push url: %o body: %o', url, body);
+        try {
+            const response = await fetch(url, {
+                method: 'post',
+                body: JSON.stringify(body),
+                headers: headers
+            });
+            const data = await response.json();
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     manifest (res) {
@@ -226,7 +232,7 @@ class Zendesk {
         } = req.body);
         // save metadata as json
         this.#metadata = (this.#metadataStr)?JSON.parse(this.#metadataStr):{};
-
+        debug("admin_ui metadata:", this.#metadata);
         //let state = (this.#state)?JSON.parse(this.#state):{};
         this.#metadata.instance_push_id = this.#instance_push_id;
         this.#metadata.zendesk_access_token = this.#zendesk_access_token;

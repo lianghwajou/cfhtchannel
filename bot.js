@@ -54,12 +54,14 @@ class Bot {
     }
     
     async botHandler (req, res) {
-        debug("botHandler:", req);
         res.sendStatus(200);
-        this.#processUpdate(req.body);
+        await this.#processUpdate(req.body).catch((e)=>{
+            debug("#processUpdate:", e);
+        });
     }
 
     async sendMessage (chatId, text) {
+        debug("sendMessage chatId: %s text: %s", chatId, text);
         let url = `${this.#apiUrl}/sendMessage?chat_id=${chatId}&text=${text}`;
         let response = await fetch(url);
         let data = await response.json();
@@ -77,19 +79,29 @@ class Bot {
 
     async #processUpdate (update) {
         let message = new Message(update.message);
-        let ctx = this.#session.retrieve(message.userId);
+        let ctx = await this.#session.retrieve(message.userId);
         let dialog = ctx.getProp("dialog");
-        if (dialog && dialog.isCompleted) {
-            // send to Zendesk
-            this.#zendesk.push(message.text);
-        } else {
-            if (!dialog) {
-                dialog = new Dialog();
-            }
-            dialog.run();
-            this.sendMessage(message.chatId, dialog.message);
+        if (!dialog) {
+            dialog = new Dialog();
             ctx.setProp("dialog", dialog);
-            this.#session.store(ctx);
+        }
+        if (dialog.isCompleted) {
+            debug("#processUpdate dialog completed dialog.state:", dialog.state);
+            // send to Zendesk
+            this.#zendesk.push(message);
+        } else {
+            dialog.reply = message.text;
+            dialog.run();
+            debug("#processUpdate dialog running dialog.state:", dialog.state);
+            if (dialog.isCompleted) {
+                // send to Zendesk
+                message = new Message(update.message, dialog.answers)
+                this.#zendesk.push(message);
+            } else {
+                let resp = await this.sendMessage(message.chatId, dialog.message);
+            }
+//            ctx.setProp("dialog", dialog);
+            await this.#session.store(ctx);
         }
     }
 
@@ -108,6 +120,10 @@ class Bot {
             this.#updateId = latestUpdateId;
         }
         return Update.messageList(updates);
+    }
+
+    get zendesk () {
+        return this.#zendesk;
     }
 
     healthCheck (req, res) {

@@ -1,17 +1,7 @@
 const questionnaire = {
 	startMsg: "Start message",
-	subject: 2,
+	title: 1,
 	qns: [
-		{
-			id: "name",
-			prompt: "What's your name?",
-			type: "text",
-			validation: /(?:)/,
-			errorMsg: "Invalid name",
-			retry: 2,
-			form: 'user',
-			fieldId: "",
-		},	
 		{
 			id: "phone",
 			prompt: "What's your phone number?",
@@ -20,7 +10,7 @@ const questionnaire = {
 			errorMsg: "Invalid phone number",
 			retry: 2,
 			form: 'user',
-			fieldId: "",
+			fieldId: "text_field_key",
 		},
 		{
 			name: "destination",
@@ -29,8 +19,8 @@ const questionnaire = {
 			validation: /(?:)/,
 			errorMsg: "Invalid destination",
 			retry: 2,
-			form: 'user',
-			fieldId: "",
+			form: 'ticket',
+			fieldId: "text_field",
 		}
 	]
 };
@@ -38,6 +28,14 @@ const questionnaire = {
 class Survey{
 	getQre () {
 		return questionnaire;
+	}
+
+	get title () {
+		if (questionnaire.title >= questionnaire.qns.length) {
+			return questionnaire.qns.length - 1;
+		} else {
+			return questionnaire.title;
+		}
 	}
 }
 

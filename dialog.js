@@ -1,29 +1,35 @@
+const debug = require('debug')("app:dialog");
 const { Survey } = require('./survey');
 const survey = new Survey();
 
 class Dialog {
 
-	constructor (state) {
-		if (!state) {
-			state = {
-				step: 0,
+	constructor (value) {
+		if (!value) {
+			this.state = {
+				step: -1,
 				retry: 0,
 				answers: [],
 				message: "",
 				reply: "",
 				completed: false
 			}
+		} else {
+			this.state = value.state;
 		}
-		this.state = state;
+		debug("constructor this.state:", this.state);
 	}
 	
 	run () {
+		debug("run: state:", this.state);
 		this.state.message = "";
 		let qre = survey.getQre();
-		if (!(this.state.step || this.state.retry)) {
+		if (this.state.step == -1) {
+			this.nextStep(this.state);
 			this.state.message = qre.startMsg + '\n';
 		}
 		let question = qre.qns[this.state.step];
+		debug(`run before message: ${this.state.message}`);
 		if (this.state.reply) {
 			if (question.validation.test(this.state.reply)) {
 				// valid return 
@@ -35,10 +41,14 @@ class Dialog {
 				this.nextStep(this.state);
 			} else {
 				if (this.state.retry < question.retry) {
+					this.nextTry(this.state);
 					this.state.message += question.errorMsg + "\n";
-					this.state.retry++;
 				} else {
-					this.state.answers[this.state.step] = "";
+					this.state.answers[this.state.step] = {
+						form: question.form,
+						fieldId: question.fieldId,
+						content: ""
+					};
 					this.nextStep(this.state);
 				}
 			}
@@ -47,30 +57,40 @@ class Dialog {
 			this.state.completed = true;
 		} else {
 			question = qre.qns[this.state.step];
-			this.state.reply = '';
 			this.state.message += question.prompt;
 		}
-		return this.state;
+		debug(`run after message: ${this.state.message}`);
+		//return {state: this.state};
 	}
 
 	set reply (msg) {
-		this.state.reply = nsg;
+		this.state.reply = msg;
 	}
 
-	isComplete () {
-		return this.state,completed;
+	get isCompleted () {
+		return this.state.completed;
 	}
 
-	answers () {
+	get answers () {
 		return this.state.answers;
 	}
-
-	message () {
+	
+	get message () {
 		return this.state.message;
 	}
 
-	state() {
-		return this.state;
+	get step () {
+		return this.state.step;
+	}
+
+	get retry () {
+		return this.state.retry;
+	}
+
+	nextTry (state) {
+		state.retry++;
+		state.reply = "";
+		state.message = "";
 	}
 
 	nextStep (state) {
@@ -79,6 +99,11 @@ class Dialog {
 		state.message = "";
 		state.step++;
 	}
+
+
+	// toJSON () {
+	// 	return JSON.stringify(this.state);
+	// }
 }
 
 exports.Dialog = Dialog;

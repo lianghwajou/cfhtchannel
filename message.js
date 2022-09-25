@@ -1,3 +1,4 @@
+const debug = require('debug')('app:message')
 const { Config } = require('./config');
 
 class Message {
@@ -49,7 +50,8 @@ class Message {
 	}
 
 	get extUsername () {
-		return ((`${this.firstname} ${this.lastname}`).trim()+` (${this.username})`);
+		let username = (this.username) ? this.username : "";
+		return ((`${this.firstname} ${this.lastname}`).trim()+` (${username})`);
 	}
 
 	get date () {
@@ -77,7 +79,7 @@ class Message {
 	}
 
 	get extResource () {
-		return {
+		let resource = {
 			external_id: this.extId,
 			message: this.text,
 			created_at: this.dateISO,
@@ -91,6 +93,8 @@ class Message {
 				fields: this.userFields,
 			},
 		}
+		debug("ext Resource", resource);
+		return resource;
 	}
 
 	processAnswers () {
@@ -115,6 +119,7 @@ class Message {
 	        }
 
 		}
+		debug("processAnswers", this.answers, this.userFields, this.ticketFields);
 	}
 
 

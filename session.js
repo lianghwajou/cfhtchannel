@@ -13,21 +13,25 @@ class Session {
 
 	async #connect() {
 		if (!this.#client) {
-			let client = createClient(clientUrl);
+			let client = createClient({url: this.#url});
 			client.on('error', (err) => debug('Redis Client Error', err));
 			await client.connect();
 			this.#client = client;
+			debug("Redis connected");
 		}
 	}
 
 	async retrieve (key) {
 		await this.#connect();
-		return new Context(key, await this.#client.get(key));
+		let value = await this.#client.get(key);
+		debug("retrieve key: %o value %o", key, value);
+		return new Context(key, value);
 	}
 
 	async store (context) {
 		await this.#connect();
-		await this.#client.set(context.key, context.json());
+		await this.#client.set(context.key, JSON.stringify(context));
+		debug("store key: %o value %o", context.key, JSON.stringify(context));
 	}
 }
 

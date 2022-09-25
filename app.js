@@ -1,3 +1,4 @@
+const debug = require('debug')("app");
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -8,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 
+debug("Start");
 
 var app = express();
 

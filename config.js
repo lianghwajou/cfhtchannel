@@ -8,7 +8,7 @@ class Config {
         botPath: '/cfhtbot',
         botPort: 443,
         botId: '12345',
-        redisUrl: 'redis://alice:foobared@awesome.redis.server:6380'
+        redisUrl: 'redis://127.0.0.1:6379'
         };
 
     static manifest = {

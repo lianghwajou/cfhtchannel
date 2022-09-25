@@ -1,10 +1,11 @@
+const debug = require('debug')('test:bot');
 const { Bot } = require('../bot');
 const { Session } = require('../session');
 const session = new Session();
 const { Zendesk } = require('../zendesk');
 const zendesk = new Zendesk();
 const { Dialog } = require('../dialog');
-jest.mock('../dialog');
+const { Message } = require('../message');
 jest.mock('../session');
 jest.mock('../zendesk');
 
@@ -17,7 +18,7 @@ describe("Test Bot class", ()=>{
 		beforeEach(()=>{
 			jest.clearAllMocks();
 		});
-		it("process update after dialog is completed", ()=>{
+		it("process update after dialog is completed", async ()=>{
 			let req = {
 				body: {
 					message: {
@@ -37,23 +38,25 @@ describe("Test Bot class", ()=>{
 				}
 			}
 			jest.spyOn(Session.prototype, 'retrieve').
-			  mockImplementation(() => {
-			    const { Context } = require('../context');
-			    let context = new Context("5251845982");
-			    context.setProp("dialog", {isCompleted: true});
-			    return context;
-			  }
+				mockImplementation(() => {
+					const { Context } = require('../context');
+					let context = new Context("5251845982");
+					const { Dialog } = require('../dialog');
+					const dialog = new Dialog();
+					dialog.state.completed = true;
+					context.setProp("dialog", dialog);
+					return context;
+				}
 			);
 
-			zendesk.push = jest.fn();
+			//zendesk.push = jest.fn();
 			let bot = new Bot(zendesk, session);
 			bot.sendMessage = jest.fn();
-			bot.botHandler(req,res);
-
+			await bot.botHandler(req,res);
 			expect(zendesk.push).toHaveBeenCalled();
-			expect(zendesk.push).toHaveBeenCalledWith("test");
+			expect(zendesk.push).toHaveBeenCalledWith(new Message(req.body.message));
 		})
-		it("process update the first time", ()=>{
+		it("process update the first time", async ()=>{
 			let req = {
 				body: {
 					message: {
@@ -80,14 +83,11 @@ describe("Test Bot class", ()=>{
 			  }
 			);
 			Session.prototype.store = jest.fn();
-			zendesk.push = jest.fn();
-			zendesk.sendMessage = jest.fn();
 			let bot = new Bot(zendesk, session);
 			bot.sendMessage = jest.fn();
-			bot.botHandler(req,res);
+			await bot.botHandler(req,res);
 
 			expect(zendesk.push).toBeCalledTimes(0);
-			expect(Dialog).toBeCalledTimes(1);
 			expect(bot.sendMessage).toHaveBeenCalledWith("20", expect.anything());
 		})
 	})
