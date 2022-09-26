@@ -1,4 +1,7 @@
 const debug = require('debug')('app:bot');
+const {createWriteStream} = require('node:fs');
+const {pipeline} = require('node:stream');
+const {promisify} = require('node:util');
 const fetch = require('node-fetch');
 const { Update } = require('./update');
 const { Message } = require('./message');
@@ -9,12 +12,14 @@ const { Session } = require('./session');
 const { Dialog } = require('./dialog');
 
 const botApiEndpoint = 'https://api.telegram.org/bot';
+const botApiFileEndpoint = 'https://api.telegram.org/file/bot';
 
 class Bot {
     #token;
     #zendesk;
     #client;
     #apiUrl;
+    #apiFileUrl;
     #updateId;
     #session;
 
@@ -29,6 +34,7 @@ class Bot {
     set token(token) {
         this.#token = token;
         this.#apiUrl = botApiEndpoint + this.#token
+        this.#apiFileUrl = botApiFileEndpoint + this.#token
     }
 
     get token() {
@@ -54,6 +60,7 @@ class Bot {
     }
     
     async botHandler (req, res) {
+        debug("botHandler req.body:", req.body);
         res.sendStatus(200);
         await this.#processUpdate(req.body).catch((e)=>{
             debug("#processUpdate:", e);
@@ -62,6 +69,9 @@ class Bot {
 
     async sendMessage (chatId, text) {
         debug("sendMessage chatId: %s text: %s", chatId, text);
+        text= encodeURIComponent(text).replace(
+            /[!'()*]/g,
+            (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
         let url = `${this.#apiUrl}/sendMessage?chat_id=${chatId}&text=${text}`;
         let response = await fetch(url);
         let data = await response.json();
@@ -77,6 +87,31 @@ class Bot {
         }
     }
 
+    async downloadFile (fileId) {
+        let url = `${this.#apiUrl}/getFile?file_id=${fileId}`;
+        debug("download getFile url:", url);
+        let getFileResp = await fetch(url);
+        let fileObj = await getFileResp.json();
+        debug("download download fileObj:", fileObj);
+        let filePath = fileObj.result.file_path;
+        let fileUrl = `${this.#apiFileUrl}/${filePath}`;
+        const streamPipeline = promisify(pipeline);
+        debug("download url:", fileUrl);
+        const response = await fetch(fileUrl);
+        if (!response.ok) throw new Error(`unexpected response ${response.statusText}`);
+        await streamPipeline(response.body, createWriteStream(`${config.mediaDir}/${filePath}`));
+        return `${config.mediaPath}${filePath}`;
+    }
+
+    async addMedia (message) {
+        if (message.photo) {
+            let photo = message.pickPhoto(message.photo);
+            let filePath = await this.downloadFile(photo.file_id);
+            message.fileUrls = [filePath];
+        }
+
+    }
+
     async #processUpdate (update) {
         let message = new Message(update.message);
         let ctx = await this.#session.retrieve(message.userId);
@@ -88,6 +123,7 @@ class Bot {
         if (dialog.isCompleted) {
             debug("#processUpdate dialog completed dialog.state:", dialog.state);
             // send to Zendesk
+            await this.addMedia(message);
             this.#zendesk.push(message);
         } else {
             dialog.reply = message.text;
@@ -96,6 +132,7 @@ class Bot {
             if (dialog.isCompleted) {
                 // send to Zendesk
                 message = new Message(update.message, dialog.answers)
+                await this.addMedia(message);
                 this.#zendesk.push(message);
             } else {
                 let resp = await this.sendMessage(message.chatId, dialog.message);

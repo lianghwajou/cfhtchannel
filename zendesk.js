@@ -161,36 +161,43 @@ class Zendesk {
     // }
 
     async channelback(req,res) {
-        this.#readMetadata(req.body.metadata); 
-        let results = await this.#bot.sendMessage(req.body.thread_id, req.body.message);
-        if (results.ok) {
-            res.send({
-                external_id: results.message.extId,
-                allow_channelback: true
-            })
-        } else {
-            res.send(400);
+        try {
+            this.#readMetadata(req.body.metadata); 
+            let results = await this.#bot.sendMessage(req.body.thread_id, req.body.message);
+            if (results.ok) {
+                res.send({
+                    external_id: results.message.extId,
+                    allow_channelback: true
+                })
+            } else {
+                res.send(400);
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 
     async push (message) {
-        let url = `https://${this.subdomain}.zendesk.com${pushEndpoint}`;
-        let extResources = [message.extResource];
-        let body = {
-            instance_push_id: this.#instance_push_id,
-            external_resources: extResources
-        }
-        let headers= {'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.#zendesk_access_token
-        }
-        debug('push url: %o body: %o', url, body);
         try {
+            let extResources = [message.extResource];
+            let url = `https://${this.subdomain}.zendesk.com${pushEndpoint}`;
+            let body = {
+                instance_push_id: this.#instance_push_id,
+                external_resources: extResources
+            }
+            let headers= {'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.#zendesk_access_token
+            }
+            debug('push url: %o body: %o', url, body);
             const response = await fetch(url, {
                 method: 'post',
                 body: JSON.stringify(body),
                 headers: headers
             });
             const data = await response.json();
+
+            debug('push results:', data);
+            return data;
         } catch (e) {
             console.error(e);
         }

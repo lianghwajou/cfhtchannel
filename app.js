@@ -22,12 +22,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use("/media/", (req,res, next)=>{
+    // Zendesk use POST to get static files so rewrite method 
+    if ("POST" == req.method) {
+        req.method = "GET";
+    }
+    next();
+});
+app.use("/media/", express.static(path.join(__dirname, 'media')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 const { Config } = require('./config');
 const config = Config.config;
+config.mediaDir = path.join(__dirname, 'media');
 
 const { Session } = require('./session');
 const session = new Session(config.redisUrl);

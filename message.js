@@ -1,7 +1,10 @@
 const debug = require('debug')('app:message')
 const { Config } = require('./config');
+// const { Media } = require('./media');
 
 class Message {
+
+	fileUrls;	// array
 
 	constructor (message, answers) {
 		this.message = message;
@@ -70,12 +73,24 @@ class Message {
 		return this.constructor.extId(this.userId, this.messageId);
 	}
 
+	get photo () {
+		return this.message.photo;
+	}
+
+	get caption () {
+		return this.message.caption;
+	}
+
 	get userFields () {
 		return this._userFields;
 	}
 
 	get ticketFields () {
 		return this._ticketFields
+	}
+
+	set fileUrls (urls) {
+		this.fileUrls = urls;
 	}
 
 	get extResource () {
@@ -93,9 +108,41 @@ class Message {
 				fields: this.userFields,
 			},
 		}
-		debug("ext Resource", resource);
+		if (!this.text) {
+			if (this.caption) {
+				resource.message = this.caption;
+			} else {
+				resource.message = "photos";				
+			}
+		}
+		if (this.fileUrls) {
+			resource.file_urls = this.fileUrls;
+		}
+		debug("extResource resource:", resource);
 		return resource;
 	}
+
+	pickPhoto (photos) {
+		let size = 0;
+		let largestPhoto;
+		for (let photo of photos) {
+			if (photo.file_size > size) {
+				largestPhoto = photo;
+			}
+		}
+		return largestPhoto;
+	}
+
+	// async processPhoto () {
+	// 	if (this.photo) {
+	// 		let largestPhoto = this.pickPhoto (this.photo);
+	// 		let media = new Media(largestPhoto.file_id);
+	// 		let fileObj = await media.download();
+	// 		return media.filePath;
+	// 	} else {
+	// 		return nil;
+	// 	}
+	// }
 
 	processAnswers () {
 		this._userFields = [];

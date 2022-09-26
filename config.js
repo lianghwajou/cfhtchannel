@@ -4,11 +4,14 @@ class Config {
         name: 'CFHT Telegram Channel Services',
         useWebhook: true,
         botToken: '5492482664:AAF95og2FW79pQ2lfX4tKsBq7qo7ZVuqU20',
-        botDomain: 'https://779b-73-223-169-83.ngrok.io',
+        botDomain: 'https://aa6a-73-223-169-83.ngrok.io',
         botPath: '/cfhtbot',
         botPort: 443,
         botId: '12345',
-        redisUrl: 'redis://127.0.0.1:6379'
+        redisUrl: 'redis://127.0.0.1:6379',
+        botApiBase: 'https://api.telegram.org/bot',
+        mediaPath: "/media/",
+        mediaDir: ""
         };
 
     static manifest = {
@@ -53,6 +56,7 @@ class Config {
         this.config.botToken = token;
         let parts = token.split(':');
         this.config.botId = parts[0];
+        this.config.botApiEndpoint = this.config.botApiBase + token;
     }
 }
 
