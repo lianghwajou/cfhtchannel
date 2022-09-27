@@ -53,7 +53,7 @@ class Bot {
 
     async asyncInit (enableWebhook) {
         if (enableWebhook) {
-            await this.#setWebhook(config.botDomain, config.botPath);
+            await this.#setWebhook(config.botDomain, `/${config.pathToken}${config.botPath}`);
         } else {
             await this.#deleteWebhook();
         }

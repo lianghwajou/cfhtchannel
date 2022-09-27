@@ -9,7 +9,7 @@ class Config {
         botPort: 443,
         botId: '12345',
         redisUrl: 'redis://127.0.0.1:6379',
-        botApiBase: 'https://api.telegram.org/bot',
+        instance_push_id: "",
         mediaPath: "/media/",
         mediaDir: ""
         };

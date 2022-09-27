@@ -1,5 +1,8 @@
 const request = require("supertest");
 const nock = require("nock");
+const configData = require('../data.json');
+configData.pathToken ="1111";
+configData.botToken="2222:aaaa";
 const app = require("../app");
 
 const botApiEndpoint = 'https://api.telegram.org/bot';
@@ -48,7 +51,7 @@ describe('unit testing /channel/pull route', function() {
       // expect(admin_ui_2_response.statusCode).toBe(200);
 
       const pull_response = await request(app)
-                              .post("/channel/pull")
+                              .post("/1111/channel/pull")
                               .send("state={}&metadata={\"token\":\""+botToken+"\"}")
                               .set("ACCEPT", "application/x-www-form-urlencoded");
       expect(pull_response.statusCode).toBe(200);

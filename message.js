@@ -66,11 +66,13 @@ class Message {
 	}
 
 	get extUserId () {
+		let username = (this.username) ? this.username : "";
 		return `${Config.botId}:${this.userId}:${this.username}`;
 	}
 
 	get extId () {
-		return this.constructor.extId(this.userId, this.messageId);
+		let config = Config.config;
+		return `${config.instance_push_id}:${config.botId}:${this.chatId}:${this.userId}:${this.messageId}`;
 	}
 
 	get photo () {

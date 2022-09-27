@@ -205,7 +205,6 @@ class Zendesk {
 
     manifest (res) {
         res.json(Config.manifest);
-
     }
 
     // healthCheck(redis, res) {

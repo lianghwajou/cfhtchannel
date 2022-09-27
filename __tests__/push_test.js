@@ -11,6 +11,10 @@ jest.spyOn(Session.prototype, 'retrieve').
 
 const request = require("supertest");
 const nock = require("nock");
+const configData = require('../data.json');
+configData.pathToken ="1111";
+configData.botToken="2222:aaaa";
+
 const app = require("../app");
 const { Zendesk } = require("../zendesk");
 
@@ -40,34 +44,34 @@ describe('unit testing webhook route', function() {
         });
         it('Should push one message to Zendesk', async function(){
             const admin_ui_response = await request(app)
-                                                            .post("/channel/admin_ui")
-                                                            .send("name=testform&return_url=http://zendesk.com&token="+botToken+"&subdomain="+subdomain)
-                                                            .set("ACCEPT", "application/x-www-form-urlencoded");
+                .post("/channel/admin_ui")
+                .send("name=testform&return_url=http://zendesk.com&token="+botToken+"&subdomain="+subdomain)
+                .set("ACCEPT", "application/x-www-form-urlencoded");
             expect(admin_ui_response.statusCode).toBe(200);
 
             const webhook_response = await request(app)
-                                                            .post("/cfhtbot")
-                                                            .send({
-                                                                "update_id": 20306818,
-                                                                "message": {
-                                                                        "message_id": 98,
-                                                                        "from": {
-                                                                                "id": 5251845982,
-                                                                                "is_bot": false,
-                                                                                "first_name": "Lianghwa",
-                                                                                "last_name": "Jou",
-                                                                                "language_code": "en"
-                                                                        },
-                                                                        "chat": {
-                                                                                "id": 5251845982,
-                                                                                "first_name": "Lianghwa",
-                                                                                "last_name": "Jou",
-                                                                                "type": "private"
-                                                                        },
-                                                                        "date": 1663128765,
-                                                                        "text": "Test32"
-                                                                }})
-                                                            .set("Content-Type", "application/json");
+                .post("/1111/cfhtbot")
+                .send({
+                    "update_id": 20306818,
+                    "message": {
+                            "message_id": 98,
+                            "from": {
+                                    "id": 5251845982,
+                                    "is_bot": false,
+                                    "first_name": "Lianghwa",
+                                    "last_name": "Jou",
+                                    "language_code": "en"
+                            },
+                            "chat": {
+                                    "id": 5251845982,
+                                    "first_name": "Lianghwa",
+                                    "last_name": "Jou",
+                                    "type": "private"
+                            },
+                            "date": 1663128765,
+                            "text": "Test32"
+                    }})
+                .set("Content-Type", "application/json");
             expect(webhook_response.statusCode).toBe(200);
                 
         })
