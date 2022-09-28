@@ -37,8 +37,11 @@ app.use(`${config.mediaPath}`, (req,res, next)=>{
     }
     next();
 });
-app.use(`${config.mediaPath}`, express.static(path.join(__dirname, 'media')));
-
+if (config.mediaDir) {
+    app.use(`${config.mediaPath}`, express.static(config.mediaDir));
+} else {
+    app.use(`${config.mediaPath}`, express.static(path.join(__dirname, 'media')));
+}
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

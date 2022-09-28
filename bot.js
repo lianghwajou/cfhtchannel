@@ -124,6 +124,7 @@ class Bot {
             debug("#processUpdate dialog completed dialog.state:", dialog.state);
             // send to Zendesk
             await this.addMedia(message);
+            message.threadHead = ctx.getProp("threadHead");
             this.#zendesk.push(message);
         } else {
             dialog.reply = message.text;
@@ -131,8 +132,11 @@ class Bot {
             debug("#processUpdate dialog running dialog.state:", dialog.state);
             if (dialog.isCompleted) {
                 // send to Zendesk
+                let resp = await this.sendMessage(message.chatId, dialog.message);
                 message = new Message(update.message, dialog.answers)
                 await this.addMedia(message);
+                ctx.setProp("threadHead", message.messageId);
+                message.threadHead = ctx.getProp("threadHead");
                 this.#zendesk.push(message);
             } else {
                 let resp = await this.sendMessage(message.chatId, dialog.message);

@@ -60,6 +60,7 @@ class Zendesk {
             this.#zendesk_access_token = this.#metadata.zendesk_access_token;
             this.#subdomain = this.#metadata.subdomain;
             this.#setupBot(this.#metadata.token, config.useWebhook);
+            config.instance_push_id = this.#instance_push_id;
         }
     }
 
@@ -163,7 +164,8 @@ class Zendesk {
     async channelback(req,res) {
         try {
             this.#readMetadata(req.body.metadata); 
-            let results = await this.#bot.sendMessage(req.body.thread_id, req.body.message);
+            let chatId = Message.getChatFromExtId(req.body.thread_id);
+            let results = await this.#bot.sendMessage(chatId, req.body.message);
             if (results.ok) {
                 res.send({
                     external_id: results.message.extId,

@@ -51,7 +51,7 @@ describe("Test Message class", ()=>{
 			created_at: "2020-05-12T23:50:21.817Z",
 			internal_note: false,
 			allow_channelback: true,
-			thread_id: "30",
+			thread_id: "1111:2222:30:30:",
 			fields: [],
 			author: {
 				external_id: "7890:30:jdoe",
@@ -71,13 +71,14 @@ describe("Test Message class", ()=>{
 		});
 
 		const message = new Message(messageData, answerData);
+		message.threadHead = "50";
 		expect(message.extResource).toStrictEqual({
 			external_id: "1111:2222:30:30:20",
 			message: "test1",
 			created_at: "2020-05-12T23:50:21.817Z",
 			internal_note: false,
 			allow_channelback: true,
-			thread_id: "30",
+			thread_id: "1111:2222:30:30:50",
 			fields: [{id: "family", value: "5"}],
 			author: {
 				external_id: "7890:30:jdoe",

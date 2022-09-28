@@ -10,18 +10,24 @@ class Message {
 		this.message = message;
 		this.answers = answers;
 		this.processAnswers();
+		this.processCmd();
 	}
 
-	static messageList(messages) {
-		let list = [];
-		for (let message of messages) {
-			list.push(new Update(message))
-		}
-		return list;
-	}
+	// static messageList(messages) {
+	// 	let list = [];
+	// 	for (let message of messages) {
+	// 		list.push(new Update(message))
+	// 	}
+	// 	return list;
+	// }
 
-	static extId (userId, messageId) {
-		return `${userId}:${messageId}`;
+	// static extId (userId, messageId) {
+	// 	return `${userId}:${messageId}`;
+	// }
+
+	static getChatFromExtId (extId) {
+		let ids = extId.split(":");
+		return ids[2];
 	}
 
 	get text() {
@@ -67,12 +73,37 @@ class Message {
 
 	get extUserId () {
 		let username = (this.username) ? this.username : "";
-		return `${Config.botId}:${this.userId}:${this.username}`;
+		return `${Config.botId}:${this.userId}:${username}`;
 	}
 
 	get extId () {
 		let config = Config.config;
 		return `${config.instance_push_id}:${config.botId}:${this.chatId}:${this.userId}:${this.messageId}`;
+	}
+
+	get entities () {
+		return this.message.entities;
+	}
+
+	get newrequestCmd () {
+		return this.newrequestCmd;
+	}
+	
+	set threadHead (threadHead) {
+		this._threadHead = threadHead;
+	}
+
+	get threadHead () {
+		return this._threadHead;
+	}
+
+	get threadId () {
+		let config = Config.config;
+		let threadId = `${config.instance_push_id}:${config.botId}:${this.chatId}:${this.userId}:`;
+		if (this.threadHead) {
+			threadId += this.threadHead;
+		}
+		return threadId;
 	}
 
 	get photo () {
@@ -102,7 +133,7 @@ class Message {
 			created_at: this.dateISO,
 			internal_note: false,
 			allow_channelback: true,
-			thread_id: this.chatId,
+			thread_id: this.threadId,
 			fields: this.ticketFields,
 			author: {
 				external_id: this.extUserId,
@@ -169,6 +200,21 @@ class Message {
 
 		}
 		debug("processAnswers", this.answers, this.userFields, this.ticketFields);
+	}
+
+	processCmd () {
+		if (this.entities) {
+			for (let entity of this.entities) {
+				if (entity.type == "bot_command") {
+					switch (this.text.substr(entity.offset, entity.length)) {
+						case "/newrequest":
+							this.newrequestCmd = true;
+							break;
+					}
+				}
+			}
+
+		}
 	}
 
 

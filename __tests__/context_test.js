@@ -17,10 +17,16 @@ describe("Test Context class", () => {
 		const context = new Context("wrongkey",dataJson);
 		expect(context.data).toStrictEqual(data.data);
 	})
-	it("Test set/get prop", () => {
+	it("Test set/get dialog", () => {
 		const dialog = new Dialog();
 		const context = new Context("wrongkey");
 		context.setProp ("dialog", dialog);
 		expect(context.getProp("dialog")).toStrictEqual(dialog);
+	})
+	it("Test set/get prop", () => {
+		const context = new Context("wrongkey");
+		const thredHead = "100";
+		context.setProp ("threadHead", thredHead);
+		expect(context.getProp("threadHead")).toBe("100");
 	})
 })

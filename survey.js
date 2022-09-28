@@ -1,5 +1,6 @@
 const questionnaire = {
 	startMsg: "Start message",
+	postMsg: "Someone will provide feedback",
 	title: 1,
 	qns: [
 		{

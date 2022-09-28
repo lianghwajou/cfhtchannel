@@ -55,6 +55,10 @@ class Dialog {
 		}
 		if (this.state.step >= qre.qns.length) {
 			this.state.completed = true;
+			this.state.message = qre.postMsg;
+			if (!qre.postMsg) {
+				this.state.message = "";
+			}
 		} else {
 			question = qre.qns[this.state.step];
 			this.state.message += question.prompt;
