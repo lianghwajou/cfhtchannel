@@ -21,12 +21,16 @@ class Dialog {
 	}
 	
 	run () {
+		let message = {
+			text: ""
+		};
 		debug("run: state:", this.state);
 		this.state.message = "";
 		let qre = survey.getQre();
 		if (this.state.step == -1) {
 			this.nextStep(this.state);
-			this.state.message = qre.startMsg + '\n';
+			// this.state.message = qre.startMsg + '\n';
+			message.text = qre.startMsg + '\n';
 		}
 		let question = qre.qns[this.state.step];
 		debug(`run before message: ${this.state.message}`);
@@ -42,7 +46,8 @@ class Dialog {
 			} else {
 				if (this.state.retry < question.retry) {
 					this.nextTry(this.state);
-					this.state.message += question.errorMsg + "\n";
+					// this.state.message += question.errorMsg + "\n";
+					message.text = question.errorMsg + "\n";
 				} else {
 					this.state.answers[this.state.step] = {
 						form: question.form,
@@ -55,15 +60,21 @@ class Dialog {
 		}
 		if (this.state.step >= qre.qns.length) {
 			this.state.completed = true;
-			this.state.message = qre.postMsg;
+			// this.state.message = qre.postMsg;
+			message.text = qre.postMsg;
 			if (!qre.postMsg) {
-				this.state.message = "";
+				// this.state.message = "";
+				message.text = "";
 			}
 		} else {
 			question = qre.qns[this.state.step];
-			this.state.message += question.prompt;
+			// this.state.message += question.prompt;
+			let results = this.processQuestion(question);
+			message.text += results.text;
+			message.keyboard = results.keyboard;
 		}
 		debug(`run after message: ${this.state.message}`);
+		return message;
 		//return {state: this.state};
 	}
 
@@ -104,7 +115,28 @@ class Dialog {
 		state.step++;
 	}
 
-
+	processQuestion (question) {
+		let col = 2;
+		let results = {};
+		results.text = question.prompt;
+		debug("processQuestion question:", question);
+		if (question.type == "select" && question.options) {
+			let keyboardButtons = [];
+			let optionList = question.options.split(',');
+			debug("processQuestion optionList:", optionList);
+			for(let idx=0; idx < optionList.length;) {
+				let row = [];
+				for (let colIdx=0; colIdx < col && idx < optionList.length; idx++, colIdx++) {
+					row.push(optionList[idx]);
+				}
+				debug("processQuestion row:", row);
+				keyboardButtons.push(row);
+			}
+			results.keyboard = keyboardButtons;
+		}
+		debug("processQuestion results:", results);
+		return results;
+	}
 	// toJSON () {
 	// 	return JSON.stringify(this.state);
 	// }

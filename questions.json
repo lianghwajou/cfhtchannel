@@ -46,7 +46,8 @@
 			{
 				"name": "originOblast",
 				"prompt": "Please select the number corresponding to the oblast where you came from: ",
-				"type": "text",
+				"type": "select",
+				"options": "Вінницька,Волинська,Дніпропетровська,Донецька",
 				"validation": "(?:)",
 				"errorMsg": "",
 				"retry": 2,

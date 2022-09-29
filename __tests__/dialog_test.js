@@ -28,7 +28,8 @@ const questionnaire = {
         {
             name: "destination",
             prompt: "What's your destination?",
-            type: "text",
+            type: "select",
+            options: "sfo,sjc,tpe",
             validation: /(?:)/,
             errorMsg: "Invalid destination",
             retry: 2,
@@ -45,35 +46,37 @@ jest.spyOn(Survey.prototype, "getQre").mockImplementation(()=>{
 
 describe("Test dialog engine", () => {
     test("It test start message", async () => {
+        let results;
         let dialog = new Dialog();
-        let state = dialog.run();
+        results = dialog.run();
         // start message plus first question
-        expect(dialog.message).toBe("Start message\nWhat's your name?");
+        expect(results.text).toBe("Start message\nWhat's your name?");
         // first answer
         dialog.reply = "john";
         // second question
-        dialog.run();
+        results = dialog.run();
         expect(dialog.step).toBe(1);
-        expect(dialog.message).toBe("What's your phone number?");
+        expect(results.text).toBe("What's your phone number?");
         // second anser (invalid case)
         dialog.reply = "nnn";
-        dialog.run();
+        results = dialog.run();
 
         expect(dialog.step).toBe(1);
-        expect(dialog.message).toBe("Invalid phone number\nWhat's your phone number?");
+        expect(results.text).toBe("Invalid phone number\nWhat's your phone number?");
         expect(dialog.retry).toBe(1);
         // second answer (valid)
         dialog.reply = "18000000000";
-        dialog.run();
+        results = dialog.run();
         expect(dialog.step).toBe(2);
-        expect(dialog.message).toBe("What's your destination?");
+        expect(results.text).toBe("What's your destination?");
+        expect(results.keyboard).toStrictEqual([["sfo","sjc"],["tpe"]]);
         expect(dialog.retry).toBe(0);
         expect(dialog.isCompleted).toBe(false);
         // third question
         dialog.reply = "San Francisco";
-        dialog.run();
+        results = dialog.run();
         expect(dialog.step).toBe(3);
-        expect(dialog.message).toBe("");
+        expect(results.text).toBe("");
         expect(dialog.retry).toBe(0);
         expect(dialog.isCompleted).toBe(true);
 

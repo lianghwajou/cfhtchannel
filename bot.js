@@ -67,12 +67,16 @@ class Bot {
         });
     }
 
-    async sendMessage (chatId, text) {
+    async sendMessage (chatId, text, replyKeyboard) {
         debug("sendMessage chatId: %s text: %s", chatId, text);
         text= encodeURIComponent(text).replace(
             /[!'()*]/g,
             (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,);
         let url = `${this.#apiUrl}/sendMessage?chat_id=${chatId}&text=${text}`;
+        if (replyKeyboard) {
+            url += "&reply_markup="+JSON.stringify(replyKeyboard);
+        }
+        debug("sendMessage url: ", url);
         let response = await fetch(url);
         let data = await response.json();
         if (data.ok) {
@@ -128,18 +132,22 @@ class Bot {
             this.#zendesk.push(message);
         } else {
             dialog.reply = message.text;
-            dialog.run();
+            let dialogMsg = dialog.run();
+            let replyKeyboard = undefined;
+            if (dialogMsg.keyboard) {
+                replyKeyboard = {keyboard: dialogMsg.keyboard, resize_keyboard: true, one_time_keyboard: true};
+            }
             debug("#processUpdate dialog running dialog.state:", dialog.state);
             if (dialog.isCompleted) {
                 // send to Zendesk
-                let resp = await this.sendMessage(message.chatId, dialog.message);
+                let resp = await this.sendMessage(message.chatId, dialogMsg.text, replyKeyboard);
                 message = new Message(update.message, dialog.answers)
                 await this.addMedia(message);
                 ctx.setProp("threadHead", message.messageId);
                 message.threadHead = ctx.getProp("threadHead");
                 this.#zendesk.push(message);
             } else {
-                let resp = await this.sendMessage(message.chatId, dialog.message);
+                let resp = await this.sendMessage(message.chatId, dialogMsg.text, replyKeyboard);
             }
 //            ctx.setProp("dialog", dialog);
             await this.#session.store(ctx);

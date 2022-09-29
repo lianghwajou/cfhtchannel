@@ -88,7 +88,7 @@ describe("Test Bot class", ()=>{
 			await bot.botHandler(req,res);
 
 			expect(zendesk.push).toBeCalledTimes(0);
-			expect(bot.sendMessage).toHaveBeenCalledWith("20", expect.anything());
+			expect(bot.sendMessage).toHaveBeenCalledWith("20", expect.anything(), undefined);
 		})
 	})
 })
