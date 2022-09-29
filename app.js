@@ -20,12 +20,12 @@ debug("Start");
 debug(" mediaPath:",config.mediaPath)
 
 var app = express();
-
+app.use(logger('combined', {stream: createLogStream()}));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -41,11 +41,10 @@ if (config.mediaDir) {
     app.use(`${config.mediaPath}`, express.static(config.mediaDir));
 } else {
     app.use(`${config.mediaPath}`, express.static(path.join(__dirname, 'media')));
+    config.mediaDir = path.join(__dirname, 'media');
 }
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
-config.mediaDir = path.join(__dirname, 'media');
 
 const { Session } = require('./session');
 const session = new Session(config.redisUrl);
@@ -76,21 +75,6 @@ app.post('/channel/admin_ui_2', async (req, res)=>{
     // setupBot(req, config.useWebhook);
     zendesk.admin_ui_2(req, res);
 });
-
-// function resetBot(req, useWebhook) {
-//   let token = '';
-//   if (req.body.metadata) {
-//     let metadata = JSON.parse(req.body.metadata);
-//     bot.token = metadata.token;
-//   }
-//   bot.asyncInit(useWebhook);
-// }
-
-// function setupBot(req, useWebhook) {
-//   token = req.body.token;
-//   bot.token = token;
-//   bot.asyncInit(useWebhook);
-// }
 
 app.post(`/${config.pathToken}/channel/pull`, (req,res)=>{
     // resetBot(req, config.useWebhook);
@@ -135,4 +119,20 @@ function updateManifest (pathToken, manifest) {
     }
 }
 
+function createLogStream () {
+    let FileStreamRotator = require('file-stream-rotator');
+    let fs = require('fs');
+
+    let  logDirectory = path.join(__dirname, 'log');
+    // ensure log directory exists
+    fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+    // create a rotating write stream
+    let  accessLogStream = FileStreamRotator.getStream({
+        date_format: 'YYYYMMDD',
+        filename: path.join(logDirectory, 'access-%DATE%.log'),
+        frequency: 'daily',
+        verbose: false
+    })
+    return accessLogStream;
+}
 module.exports = app;

@@ -70,28 +70,32 @@ class Zendesk {
     }
 
     async pull(req, res) {
-        this.#readMetadata(req.body.metadata);
-        // let metadata = (req.body.metadata)?JSON.parse(req.body.metadata):{};
-        // let state = (req.body.state)?JSON.parse(req.body.state):{};
-        if (config.useWebhook) {
-            res.send({
-                external_resources: [],
-                // state: JSON.stringify(state),
-                metadata_needs_update: false,
-                metadata: JSON.stringify(this.#metadata)
-            });
-        } else {
-            let externalResources = [];
-            let messages = await this.#bot.getMessages();
-            for (let message of messages) {
-                externalResources.push(message.extResource);
+        try {
+            this.#readMetadata(req.body.metadata);
+            // let metadata = (req.body.metadata)?JSON.parse(req.body.metadata):{};
+            // let state = (req.body.state)?JSON.parse(req.body.state):{};
+            if (config.useWebhook) {
+                res.send({
+                    external_resources: [],
+                    // state: JSON.stringify(state),
+                    metadata_needs_update: false,
+                    metadata: JSON.stringify(this.#metadata)
+                });
+            } else {
+                let externalResources = [];
+                let messages = await this.#bot.getMessages();
+                for (let message of messages) {
+                    externalResources.push(message.extResource);
+                }
+                res.send({
+                    external_resources: externalResources,
+                    // state: JSON.stringify(state),
+                    metadata_needs_update: false,
+                    metadata: JSON.stringify(this.#metadata)
+                });
             }
-            res.send({
-                external_resources: externalResources,
-                // state: JSON.stringify(state),
-                metadata_needs_update: false,
-                metadata: JSON.stringify(this.#metadata)
-            });
+        } catch (e) {
+            console.error(e);
         }
     }
 
