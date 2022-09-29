@@ -1,15 +1,10 @@
 const questions = require("./questions.json");
-const questionnaire = {
-	startMsg: "Start message",
-	postMsg: "Someone will provide feedback",
-	title: 1,
-	qns: undefined
-};
+let questionnaire = undefined;
 
 class Survey{
 	getQre () {
-		if (!questionnaire.qns) {
-			questionnaire.qns = this.processQuestions();
+		if (!questionnaire) {
+			questionnaire = this.processQuestions();
 		}
 		return questionnaire;
 	}
@@ -24,11 +19,12 @@ class Survey{
 
 	processQuestions () {
 		try {
-			let questions = require("./questions.json");
+			let questionnaire = require("./questions.json");
+			let questions = questionnaire.qns;
 			for (let question of questions) {
 				question.validation = new RegExp(question.validation);
 			}
-			return questions;
+			return questionnaire;
 		} catch (e) {
 			console.error(e);
 		}
