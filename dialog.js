@@ -121,9 +121,11 @@ class Dialog {
 		results.text = question.prompt;
 		debug("processQuestion question:", question);
 		if (question.type == "select" && question.options) {
+			if (question.column) {
+				col = question.column;
+			}
 			let keyboardButtons = [];
-			let optionList = question.options.split(',');
-			debug("processQuestion optionList:", optionList);
+			let optionList = question.options;
 			for(let idx=0; idx < optionList.length;) {
 				let row = [];
 				for (let colIdx=0; colIdx < col && idx < optionList.length; idx++, colIdx++) {

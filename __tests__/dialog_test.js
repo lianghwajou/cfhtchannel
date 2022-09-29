@@ -29,7 +29,7 @@ const questionnaire = {
             name: "destination",
             prompt: "What's your destination?",
             type: "select",
-            options: "sfo,sjc,tpe",
+            options: ["sfo","sjc","tpe"],
             validation: /(?:)/,
             errorMsg: "Invalid destination",
             retry: 2,
