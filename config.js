@@ -3,7 +3,7 @@ class Config {
     static _config = {
         name: 'CFHT Telegram Channel Services',
         useWebhook: true,
-        botToken: '5492482664:AAF95og2FW79pQ2lfX4tKsBq7qo7ZVuqU20',
+        botToken: '',
         botDomain: 'https://aa6a-73-223-169-83.ngrok.io',
         botPath: '/cfhtbot',
         botPort: 443,
