@@ -52,7 +52,7 @@ describe('unit testing /channel/pull route', function() {
 
       const pull_response = await request(app)
                               .post("/1111/channel/pull")
-                              .send("state={}&metadata={\"token\":\""+botToken+"\"}")
+                              .send("state={}&metadata={\"zendesk_access_token\":\""+botToken+"\"}")
                               .set("ACCEPT", "application/x-www-form-urlencoded");
       expect(pull_response.statusCode).toBe(200);
         

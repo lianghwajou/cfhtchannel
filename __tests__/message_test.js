@@ -44,7 +44,7 @@ describe("Test Message class", ()=>{
 		expect(message.messageId).toBe("20");
 		expect(message.extUsername).toBe("John Doe (jdoe)");
 		expect(message.extId).toBe("1111:2222:30:30:20");
-		expect(message.extUserId).toBe("7890:30:jdoe");
+		expect(message.extUserId).toBe("7890:30");
 		expect(message.extResource).toStrictEqual({
 			external_id: "1111:2222:30:30:20",
 			message: "test1",
@@ -54,7 +54,7 @@ describe("Test Message class", ()=>{
 			thread_id: "1111:2222:30:30:",
 			fields: [],
 			author: {
-				external_id: "7890:30:jdoe",
+				external_id: "7890:30",
 				name: "John Doe (jdoe)",
 				fields: []
 			}
@@ -81,7 +81,7 @@ describe("Test Message class", ()=>{
 			thread_id: "1111:2222:30:30:50",
 			fields: [{id: "family", value: "5"}],
 			author: {
-				external_id: "7890:30:jdoe",
+				external_id: "7890:30",
 				name: "John Doe (jdoe)",
 				fields: [{id: "passport", value: "abcde"}]
 			}

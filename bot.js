@@ -35,6 +35,7 @@ class Bot {
         this.#token = token;
         this.#apiUrl = botApiEndpoint + this.#token
         this.#apiFileUrl = botApiFileEndpoint + this.#token
+        debug("set token", token);
     }
 
     get token() {
@@ -79,6 +80,7 @@ class Bot {
         debug("sendMessage url: ", url);
         let response = await fetch(url);
         let data = await response.json();
+        debug("sendMessage results", {data});
         if (data.ok) {
             return {
                 ok: data.ok,

@@ -11,13 +11,11 @@ var usersRouter = require('./routes/users');
 const configData = require('./data.json'); // don't save this file to git
 const { Config } = require('./config');
 const config = Config.config;
-config.pathToken = configData.pathToken;
+Config.update(configData);
+debug({config});
+
 config.mediaPath = `/${config.pathToken}${config.mediaPath}`;
 updateManifest(config.pathToken, Config.manifest);
-Config.botToken = configData.botToken;
-
-debug("Start");
-debug(" mediaPath:",config.mediaPath)
 
 var app = express();
 app.use(logger('combined', {stream: createLogStream()}));
@@ -43,16 +41,15 @@ if (config.mediaDir) {
     app.use(`${config.mediaPath}`, express.static(path.join(__dirname, 'media')));
     config.mediaDir = path.join(__dirname, 'media');
 }
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 const { Session } = require('./session');
 const session = new Session(config.redisUrl);
 const { Zendesk } = require('./zendesk');
-const zendesk = new Zendesk();
+const zendesk = new Zendesk(config.subdomain, config.instance_push_id, config.zendesk_access_token);
 const { Bot } = require('./bot');
 const bot = new Bot(zendesk, session);
 zendesk.bot = bot;
+bot.token = config.botToken;
 
 if (config.useWebhook) {
     app.post(`/${config.pathToken}${config.botPath}`, (req, res)=>{

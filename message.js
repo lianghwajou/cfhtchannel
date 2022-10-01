@@ -72,8 +72,8 @@ class Message {
 	}
 
 	get extUserId () {
-		let username = (this.username) ? this.username : "";
-		return `${Config.botId}:${this.userId}:${username}`;
+		// let username = (this.username) ? this.username : "";
+		return `${Config.botId}:${this.userId}`;
 	}
 
 	get extId () {

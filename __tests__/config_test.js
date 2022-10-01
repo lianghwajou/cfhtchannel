@@ -31,7 +31,6 @@ describe("Test Config class", () => {
 		Config.botToken = "1234567890:AAF95og2FW79pQ2lfX4tKsBq7qo7ZVuqU20";
 		expect(Config.botToken).toBe("1234567890:AAF95og2FW79pQ2lfX4tKsBq7qo7ZVuqU20");
 		expect(Config.botId).toBe('1234567890');
-		expect(Config.manifest.id).toBe('org.cfht.integration.zendesk.telegram');
-
+		
 	}) 
 });

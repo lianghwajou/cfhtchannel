@@ -1,7 +1,7 @@
 class Config {
 
     static _config = {
-        name: 'CFHT Telegram Channel Services',
+        name: 'CFHT Telegram Channel Services beta', // name of the instance (account)
         useWebhook: true,
         botToken: '',
         botDomain: 'https://aa6a-73-223-169-83.ngrok.io',
@@ -15,14 +15,14 @@ class Config {
         };
 
     static manifest = {
-        name: 'CFHTTelegram',
-        id: 'org.cfht.integration.zendesk.telegram',
+        name: 'CFHTTelegram-beta',  // name of the integration
+        id: 'org.cfht.integration.zendesk.telegram-beta', // id of thentegration
         version: '1.0.0',
         author: 'Lianghwa Jou',
     //    push_client_id: '',
         channelback_files: false,
         create_followup_tickets: true,
-        push_client_id: 'cfht_telegram_channel_services',
+        push_client_id: 'cfht_telegram_channel_services_beta',
         urls: {
             admin_ui: '/channel/admin_ui',
             pull_url: '/channel/pull',
@@ -56,8 +56,30 @@ class Config {
         this.config.botToken = token;
         let parts = token.split(':');
         this.config.botId = parts[0];
-        this.config.botApiEndpoint = this.config.botApiBase + token;
+//        this.config.botApiEndpoint = this.config.botApiBase + token;
     }
+
+    static update(configData) {
+        let config = this.config;
+        if (configData) {
+            if (configData.subdomain) {
+                config.subdomain = configData.subdomain;
+            }
+            if (configData.instance_push_id) {
+                config.instance_push_id = configData.instance_push_id;
+            }
+            if (configData.zendesk_access_token) {
+                config.zendesk_access_token = configData.zendesk_access_token;
+            }
+            if (configData.pathToken) {
+                config.pathToken = configData.pathToken;
+            }
+            if (configData.botToken) {
+                this.botToken = configData.botToken;
+            }
+        }
+    }
+
 }
 
 exports.Config = Config;
