@@ -1,28 +1,28 @@
 class Config {
 
     static _config = {
-        name: 'CFHT Telegram Channel Services beta', // name of the instance (account)
+        name: 'CFHT Telegram Channel Services', // name of the instance (account)
         useWebhook: true,
         botToken: '',
-        botDomain: 'https://aa6a-73-223-169-83.ngrok.io',
+        botDomain: 'https://bot.fht.org',
         botPath: '/cfhtbot',
         botPort: 443,
         botId: '12345',
-        redisUrl: 'redis://127.0.0.1:6379',
+        redisUrl: 'redis://cfht-bot-redis-cluster.8okdsp.ng.0001.use1.cache.amazonaws.com:6379',
         instance_push_id: "",
         mediaPath: "/media/",
-        mediaDir: ""
+        mediaDir: "/mnt/efs/fs1/media"
         };
 
     static manifest = {
-        name: 'CFHTTelegram-beta',  // name of the integration
-        id: 'org.cfht.integration.zendesk.telegram-beta', // id of thentegration
+        name: 'CFHTTelegram',  // name of the integration
+        id: 'org.cfht.integration.zendesk.telegram', // id of thentegration
         version: '1.0.0',
         author: 'Lianghwa Jou',
     //    push_client_id: '',
         channelback_files: false,
         create_followup_tickets: true,
-        push_client_id: 'cfht_telegram_channel_services_beta',
+        push_client_id: 'cfht_telegram_channel_services',
         urls: {
             admin_ui: '/channel/admin_ui',
             pull_url: '/channel/pull',
