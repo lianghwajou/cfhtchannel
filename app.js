@@ -57,6 +57,11 @@ if (config.useWebhook) {
     });
 }
 
+// Health check use
+app.get(`/`, (req, res)=>{
+    res.sendStatus(200);
+});
+
 // zendesk channel route
 app.get(`/${config.pathToken}/channel/manifest`, (req, res)=>{
     zendesk.manifest(res);
