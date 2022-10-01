@@ -4,7 +4,7 @@ class Config {
         name: 'CFHT Telegram Channel Services', // name of the instance (account)
         useWebhook: true,
         botToken: '',
-        botDomain: 'https://bot.fht.org',
+        botDomain: 'https://bot.cfht.org',
         botPath: '/cfhtbot',
         botPort: 443,
         botId: '12345',
