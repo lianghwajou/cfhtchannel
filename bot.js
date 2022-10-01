@@ -45,11 +45,15 @@ class Bot {
     async #setWebhook(domain, path) {
         let url = this.#apiUrl + '/setWebhook?' + "url=" + domain + path;
         let res = await fetch(url);
+        let status = await res.json();
+        debug("setWebhook", {url, status});
     }
 
     async #deleteWebhook() {
         let url = this.#apiUrl + '/deleteWebhook';
         let res = await fetch(url);
+        let status = await res.json();
+        debug("deleteWebhook", {url, status});
     }
 
     async asyncInit (enableWebhook) {
@@ -76,6 +80,8 @@ class Bot {
         let url = `${this.#apiUrl}/sendMessage?chat_id=${chatId}&text=${text}`;
         if (replyKeyboard) {
             url += "&reply_markup="+JSON.stringify(replyKeyboard);
+        } else {
+            url += "&reply_markup="+JSON.stringify({remove_keyboard: true});
         }
         debug("sendMessage url: ", url);
         let response = await fetch(url);

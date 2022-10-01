@@ -50,7 +50,8 @@ const { Bot } = require('./bot');
 const bot = new Bot(zendesk, session);
 zendesk.bot = bot;
 bot.token = config.botToken;
-
+bot.asyncInit(config.useWebhook);
+debug("bot route", `/${config.pathToken}${config.botPath}`);
 if (config.useWebhook) {
     app.post(`/${config.pathToken}${config.botPath}`, (req, res)=>{
         bot.botHandler(req, res);

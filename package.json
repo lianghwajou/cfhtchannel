@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "PORT=8000 node ./bin/www",
+    "start": "PORT=8000 pm2 start ./bin/www --name cfht-bot",
+    "stop": "pm2 stop cfht-bot",
     "test": "jest"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "node-fetch": "^2.6.7",
+    "pm2": "^5.2.0",
     "pug": "2.0.0-beta11",
     "redis": "^4.3.0",
     "telegraf": "^4.9.1"
