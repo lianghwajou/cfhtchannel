@@ -66,10 +66,12 @@ class Bot {
     
     async botHandler (req, res) {
         debug("botHandler req.body:", req.body);
-        res.sendStatus(200);
-        await this.#processUpdate(req.body).catch((e)=>{
-            debug("#processUpdate:", e);
-        });
+        try {
+            await this.#processUpdate(req.body);
+            res.sendStatus(200);
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     async sendMessage (chatId, text, replyKeyboard) {

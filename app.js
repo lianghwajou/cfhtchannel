@@ -18,6 +18,7 @@ config.mediaPath = `/${config.pathToken}${config.mediaPath}`;
 updateManifest(config.pathToken, Config.manifest);
 
 var app = express();
+debug("Environment:", (process.env.NODE_ENV=="dev")?"Development":"Production");
 app.use(logger('combined', {stream: createLogStream()}));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -59,7 +60,8 @@ if (config.useWebhook) {
 }
 
 // Health check use
-app.get(`/`, (req, res)=>{
+app.get(`/`, async (req, res)=>{
+    await session.retrieve("nothing");
     res.sendStatus(200);
 });
 

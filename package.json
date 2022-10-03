@@ -5,6 +5,7 @@
   "scripts": {
     "start": "PORT=8000 pm2 start ./bin/www --name cfht-bot",
     "stop": "pm2 stop cfht-bot",
+    "dev":"NODE_ENV=dev PORT=8000 DEBUG=app* node ./bin/www",
     "test": "jest"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "jest": "^29.0.3",
     "mocha": "^10.0.0",
     "nock": "^13.2.9",
+    "prettier": "^2.7.1",
     "supertest": "^6.2.4"
   }
 }
