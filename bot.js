@@ -135,10 +135,12 @@ class Bot {
             dialog = new Dialog();
             ctx.setProp("dialog", dialog);
         }
-        if (message.newrequestCmd) {
-            dialog.reset();
+        if (message.cmd == "newrequest") {
+            if (dialog.isCompleted) {
+                dialog.form = "ticket";
+            }
+            dialog.clear();
             ctx.setProp("threadHead", message.messageId);
-            message.newrequestCmd = false;
         }
         if (dialog.isCompleted) {
             debug("#processUpdate dialog completed dialog.state:", dialog.state);

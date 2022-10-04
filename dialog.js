@@ -13,6 +13,16 @@ class Dialog {
 		debug("constructor this.state:", this.state);
 	}
 
+
+	clear () {
+		this.state.step = -1;
+		this.state.retry = 0;
+		this.state.answer = [];
+		this.state.message = "";
+		this.state.reply = "";
+		this.state.completed = false;
+	}
+
 	reset () {
 		this.state = {
 			step: -1,
@@ -20,6 +30,7 @@ class Dialog {
 			answers: [],
 			message: "",
 			reply: "",
+			form: false,
 			completed: false
 		}
 
@@ -83,6 +94,14 @@ class Dialog {
 		//return {state: this.state};
 	}
 
+	get form () {
+		return this.state.form;
+	}
+
+	set form (val) {
+		this.state.form = val;
+	}
+
 	set reply (msg) {
 		this.state.reply = msg;
 	}
@@ -117,7 +136,14 @@ class Dialog {
 		state.retry = 0;
 		state.reply = "";
 		state.message = "";
-		state.step++;
+		let qre = survey.getQre();
+		let qns = qre.qns;
+		while (true) {
+			state.step++;
+			if (state.step >= qns.length || qns[state.step].form == state.form || !state.form) {
+				break;
+			}
+		}
 	}
 
 	processQuestion (question) {

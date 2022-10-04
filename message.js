@@ -85,14 +85,10 @@ class Message {
 		return this.message.entities;
 	}
 
-	get newrequestCmd () {
-		return this._newrequestCmd;
+	get cmd () {
+		return this._cmd;
 	}
 
-	set newrequestCmd (state) {
-		this._newrequestCmd = state;
-	}
-	
 	set threadHead (threadHead) {
 		this._threadHead = threadHead;
 	}
@@ -212,7 +208,10 @@ class Message {
 				if (entity.type == "bot_command") {
 					switch (this.text.substr(entity.offset, entity.length)) {
 						case "/newrequest":
-							this.newrequestCmd = true;
+							this._cmd = "newrequest";
+							break;
+						case "/start":
+							this._cmd = "start";
 							break;
 					}
 				}
