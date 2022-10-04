@@ -6,18 +6,23 @@ class Dialog {
 
 	constructor (value) {
 		if (!value) {
-			this.state = {
-				step: -1,
-				retry: 0,
-				answers: [],
-				message: "",
-				reply: "",
-				completed: false
-			}
+			this.reset();
 		} else {
 			this.state = value.state;
 		}
 		debug("constructor this.state:", this.state);
+	}
+
+	reset () {
+		this.state = {
+			step: -1,
+			retry: 0,
+			answers: [],
+			message: "",
+			reply: "",
+			completed: false
+		}
+
 	}
 	
 	run () {

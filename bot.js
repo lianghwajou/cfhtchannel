@@ -70,6 +70,7 @@ class Bot {
             await this.#processUpdate(req.body);
             res.sendStatus(200);
         } catch(e) {
+            res.sendStatus(503);
             console.error(e);
         }
     }
@@ -134,6 +135,11 @@ class Bot {
             dialog = new Dialog();
             ctx.setProp("dialog", dialog);
         }
+        if (message.newrequestCmd) {
+            dialog.reset();
+            ctx.setProp("threadHead", message.messageId);
+            message.newrequestCmd = false;
+        }
         if (dialog.isCompleted) {
             debug("#processUpdate dialog completed dialog.state:", dialog.state);
             // send to Zendesk
@@ -160,8 +166,8 @@ class Bot {
                 let resp = await this.sendMessage(message.chatId, dialogMsg.text, replyKeyboard);
             }
 //            ctx.setProp("dialog", dialog);
-            await this.#session.store(ctx);
         }
+        await this.#session.store(ctx);
     }
 
     async getMessages () {

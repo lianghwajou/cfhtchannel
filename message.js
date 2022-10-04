@@ -86,7 +86,11 @@ class Message {
 	}
 
 	get newrequestCmd () {
-		return this.newrequestCmd;
+		return this._newrequestCmd;
+	}
+
+	set newrequestCmd (state) {
+		this._newrequestCmd = state;
 	}
 	
 	set threadHead (threadHead) {
