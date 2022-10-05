@@ -6,7 +6,7 @@ class Config {
                 name: 'CFHT Telegram Channel Services beta',
                 useWebhook: true,
                 botToken: '',
-                botDomain: 'https://d2ad-73-223-169-83.ngrok.io',
+                botDomain: 'https://882e-73-223-169-83.ngrok.io',
                 botPath: '/cfhtbot',
                 botPort: 443,
                 botId: '',
@@ -37,6 +37,7 @@ class Config {
 
             };
         } else {
+            // Production configuration
             this._config = {
                 name: 'CFHT Telegram Channel Services', // name of the instance (account)
                 useWebhook: true,

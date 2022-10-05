@@ -1,9 +1,10 @@
-const debug = require('debug')("app");
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+createDebugLog();
+const debug = require('debug')("app");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -19,7 +20,7 @@ updateManifest(config.pathToken, Config.manifest);
 
 var app = express();
 debug("Environment:", (process.env.NODE_ENV=="dev")?"Development":"Production");
-app.use(logger('combined', {stream: createLogStream()}));
+app.use(logger('combined', {stream: createLogStream('access')}));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -115,6 +116,15 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
+function createDebugLog () {
+    const util = require('util');
+    const createDebugger = require('debug');
+    const debugStream = createLogStream('debug');
+    createDebugger.log = function(...args) {
+        return debugStream.write(util.format(...args) + '\n');
+    }    
+}
+
 function updateManifest (pathToken, manifest) {
     let urls = manifest.urls;
     for (const url in urls) {
@@ -124,9 +134,10 @@ function updateManifest (pathToken, manifest) {
     }
 }
 
-function createLogStream () {
+function createLogStream (prefix) {
     let FileStreamRotator = require('file-stream-rotator');
     let fs = require('fs');
+    let filename = `${prefix}-%DATE%.log`;
 
     let  logDirectory = path.join(__dirname, 'log');
     // ensure log directory exists
@@ -134,7 +145,7 @@ function createLogStream () {
     // create a rotating write stream
     let  accessLogStream = FileStreamRotator.getStream({
         date_format: 'YYYYMMDD',
-        filename: path.join(logDirectory, 'access-%DATE%.log'),
+        filename: path.join(logDirectory, filename),
         frequency: 'daily',
         verbose: false
     })
