@@ -18,6 +18,7 @@ class Zendesk {
     #instance_push_id;
     #zendesk_access_token;
     #locale;
+    #tags;
 
     // Got tokens either from constructor or admin_ui
     constructor (subdomain, instance_push_id, zendesk_access_token) {
@@ -44,7 +45,8 @@ class Zendesk {
             this.#zendesk_access_token = this.#metadata.zendesk_access_token;
             this.#instance_push_id = this.#metadata.instance_push_id;
             this.#subdomain = this.#metadata.subdomain;
-            Config.update({subdomain: this.#subdomain,instance_push_id: this.#instance_push_id,zendesk_access_token: this.#zendesk_access_token,botToken: this.#metadata.botToken});
+            this.#tags = this.#metadata.tags;
+            Config.update({tags: this.#metadata.tags, subdomain: this.#subdomain,instance_push_id: this.#instance_push_id,zendesk_access_token: this.#zendesk_access_token,botToken: this.#metadata.botToken});
             if (this.#metadata.botToken) {
                 this.#setupBot(this.#metadata.botToken, config.useWebhook);
             }
@@ -151,11 +153,6 @@ class Zendesk {
         this.#metadata = (this.#metadataStr)?JSON.parse(this.#metadataStr):{};
         //let state = (this.#state)?JSON.parse(this.#state):{};
         // Save received parameters into metadaa.
-        this.#metadata.instance_push_id = this.#instance_push_id;
-        this.#metadata.zendesk_access_token = this.#zendesk_access_token;
-        this.#metadata.subdomain = this.#subdomain;
-        Config.update({subdomain: this.#subdomain,instance_push_id: this.#instance_push_id,zendesk_access_token: this.#zendesk_access_token});
-        debug("admin_ui", {subdomain:this.#subdomain, instance_push_id:this.#instance_push_id, zendesk_access_token:this.#zendesk_access_token, meta_data:this.#metadata});
         if (!this.#name) {
             // New account
             this.#name = config.name;
@@ -163,7 +160,16 @@ class Zendesk {
         if (!this.#metadata.botToken) {
             this.#metadata.botToken = '';
         }
-        res.render('admin_ui', {name: this.#name, token: this.#metadata.botToken, metadata: JSON.stringify(this.#metadata), return_url: this.#return_url}, (err, html) => {
+        if (!this.#metadata.tags) {
+            this.#metadata.tags = '';
+        }
+        this.#tags = this.#metadata.tags;
+        this.#metadata.instance_push_id = this.#instance_push_id;
+        this.#metadata.zendesk_access_token = this.#zendesk_access_token;
+        this.#metadata.subdomain = this.#subdomain;
+        Config.update({tags: this.#metadata.tags, subdomain: this.#subdomain,instance_push_id: this.#instance_push_id,zendesk_access_token: this.#zendesk_access_token});
+        debug("admin_ui", {subdomain:this.#subdomain, instance_push_id:this.#instance_push_id, zendesk_access_token:this.#zendesk_access_token, meta_data:this.#metadata});
+        res.render('admin_ui', {name: this.#name, token: this.#metadata.botToken, tags: this.#metadata.tags, metadata: JSON.stringify(this.#metadata), return_url: this.#return_url}, (err, html) => {
             res.send(html);
         });
     }
@@ -176,9 +182,11 @@ class Zendesk {
         let data = req.body;
         this.#metadata = JSON.parse(data.metadata);
         this.#metadata.botToken = data.token;
+        this.#metadata.tags = data.tags;
         this.#metadataStr = JSON.stringify(this.#metadata);
+        this.#tags = data.tags
         let return_url = data.return_url;
-        Config.update({botToken: data.token});
+        Config.update({botToken: data.token, tags: data.tags});
 
         this.#setupBot(this.#metadata.botToken, config.useWebhook);
         debug("admin_ui_2",{name: data.name, metadata: this.#metadata});

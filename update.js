@@ -1,10 +1,12 @@
 const { Message } = require('./message');
+const { Config } = require('./config');
+const config = Config.config;
 
 class Update {
 
 	constructor (update, answers) {
 		this.update = update;
-		this._message = new Message (update.message, answers);
+		this._message = new Message (update.message, answers, config.tags);
 	}
 
 	get updateId () {

@@ -1,11 +1,12 @@
 {
-	"startMsg": "Start message",
-	"postMsg": "Thank You for providing Your information. Someone will review Your information and provide feedback in the next ~2 weeks. ",
+	"startMsg": "Ласкаво просимо до Step With Hope - наш бот поставить вам кілька запитань, щоб ми могли якнайкраще вам допомогти.",
+	"postMsg": "Дякуємо за надання інформації. Ми опрацюємо Вашу заявку та надамо відповідь протягом наступних ~2 тижнів. ",
+	"errTag": "need_clarification",
 	"title": 1,
 	"qns":[
 			{
 				"id": "name",
-				"prompt": "To start the bot, please enter your first and last name",
+				"prompt": "Щоб почати, введіть своє прізвище, ім'я і по-батькові:",
 				"type": "text",
 				"validation": "(?:)",
 				"errorMsg": "",
@@ -15,37 +16,37 @@
 			},
 			{
 				"name": "phone",
-				"prompt": "Please enter your phone number (+380xxxxxxxxx, 0xxxxxxxxx, 380xxxxxxxxx)",
+				"prompt": "Вкажіть, будь ласка, Ваш номер телефон (+380xxxxxxxxx, 0xxxxxxxxx, 380xxxxxxxxx)",
 				"type": "text",
 				"validation": "(^\\+380\\d{9}$)|(^0\\d{9}$)|(^380\\d{9}$)",
-				"errorMsg": "Invalid phone number format",
+				"errorMsg": "Відповідь не розпізнано - дотримуйтеся прикладів формату номера телефону.",
 				"retry": 2,
 				"form": "user",
 				"fieldId": "Fk__telephone_number"
 			},
 			{
 				"name": "memberNumber",
-				"prompt": "How many individuals are in your family that you are requesting aids for ? (1 or 2 or 3 or ...)",
+				"prompt": "Скільком людям у Вашій родині Ви просите допомоги? (Будь ласка, введіть число)",
 				"type": "number",
 				"validation": "^\\d{1,2}$",
-				"errorMsg": "Invalid number",
+				"errorMsg": "Відповідь не розпізнано - введіть лише число (приклад: 3)",
 				"retry": 2,
 				"form": "user",
 				"fieldId": "Fk__number_of_family_members"
 			},
 			{
 				"name": "memberAge",
-				"prompt": "How old is each individual in your family ? (15,21,50,...)",
+				"prompt": "Скільки років кожному у вашій родині?",
 				"type": "text",
-				"validation": "^\\d{1,3}(,\\d{1,3})*$",
-				"errorMsg": "Invalid age",
+				"validation": "(?:)",
+				"errorMsg": "",
 				"retry": 2,
 				"form": "user",
 				"fieldId": "Fk__dc_family_composition_ticket_field___title__"
 			},
 			{
 				"name": "originOblast",
-				"prompt": "Please select the number corresponding to the oblast where you came from: ",
+				"prompt": "Виберіть область, з якої Ви приїхали:",
 				"type": "select",
 				"options": [
 					"Вінницька",
@@ -82,7 +83,7 @@
 			},
 			{
 				"name": "originCity",
-				"prompt": "Where are you from (city) ?",
+				"prompt": "Звідки Ви (місто)?",
 				"type": "text",
 				"validation": "(?:)",
 				"errorMsg": "",
@@ -92,7 +93,7 @@
 			},
 			{
 				"name": "idp",
-				"prompt": "Please enter your IDP#:",
+				"prompt": "Будь ласка, введіть номер ВПО#:",
 				"type": "text",
 				"validation": "(?:)",
 				"errorMsg": "",
@@ -102,17 +103,17 @@
 			},
 			{
 				"name": "passport",
-				"prompt": "Please enter your Passport #:",
+				"prompt": "Будь ласка, введіть номер свого паспорта:",
 				"type": "number",
-				"validation": "^\\d+$",
-				"errorMsg": "Invalid Passport #",
+				"validation": "^..\\d{6}$",
+				"errorMsg": "Відповідь не розпізнана – будь ласка, використовуйте дві літери, після яких йдуть 6 цифр.",
 				"retry": 2,
 				"form": "user",
 				"fieldId": "Fk__dc_passport_number_ticket_field___title__"
 			},
 			{
 				"name": "currentLocation",
-				"prompt": "Please select the city that you are currently closest to:",
+				"prompt": "Будь ласка, виберіть місто, до якого Ви зараз найближче:",
 				"type": "select",
 				"options": [
 					"Дніпро (Лівий берег)",
@@ -142,14 +143,8 @@
 			},
 			{
 				"name": "request",
-				"prompt": "Please enter the type of support you are looking for:",
-				"type": "select",
-				"options": [
-					"Продуктовий",
-					 "набір",
-					 "Гігієна",
-					 "Інший"
-				],
+				"prompt": "Будь ласка, виберіть тип підтримки, який Ви шукаєте:",
+				"type": "text",
 				"validation": "(?:)",
 				"errorMsg": "",
 				"retry": 2,

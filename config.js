@@ -117,6 +117,9 @@ class Config {
             if (configData.botToken) {
                 this.botToken = configData.botToken;
             }
+            if (configData.tags) {
+                config.tags = configData.tags;
+            }
         }
     }
 

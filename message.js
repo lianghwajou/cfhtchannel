@@ -6,9 +6,13 @@ class Message {
 
 	fileUrls;	// array
 
-	constructor (message, answers) {
+	constructor (message, answers, tags) {
 		this.message = message;
 		this.answers = answers;
+		if (tags && tags.length) {
+			tags = tags.trim();
+			this.tags = tags;
+		}
 		this.processAnswers();
 		this.processCmd();
 	}
@@ -177,6 +181,7 @@ class Message {
 	// 	}
 	// }
 
+
 	processAnswers () {
 		this._userFields = [];
 		this._ticketFields = [];
@@ -198,6 +203,12 @@ class Message {
 	            }
 	        }
 
+		}
+		if (this.tags) {
+			this._ticketFields.push({
+				id: "tags",
+				value: this.tags.split(',').map(str=>str.trim())
+			});
 		}
 		debug("processAnswers", this.answers, this.userFields, this.ticketFields);
 	}

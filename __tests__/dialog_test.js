@@ -3,6 +3,8 @@ const { Dialog } = require("../dialog");
 const { Survey } = require("../survey");
 const questionnaire = {
     startMsg: "Start message",
+    postMsg: "Thank you",
+    errTag: "need_clarification",
     subject: 2,
     qns: [
         {
@@ -11,7 +13,7 @@ const questionnaire = {
             type: "text",
             validation: /(?:)/,
             errorMsg: "Invalid name",
-            retry: 2,
+            retry: 1,
             form: 'user',
             fieldId: "text_field_key",
         },
@@ -21,7 +23,7 @@ const questionnaire = {
             type: "text",
             validation: /\d+/,
             errorMsg: "Invalid phone number",
-            retry: 2,
+            retry: 1,
             form: 'user',
             fieldId: "text_field_key",
         },
@@ -32,7 +34,7 @@ const questionnaire = {
             options: ["sfo","sjc","tpe"],
             validation: /(?:)/,
             errorMsg: "Invalid destination",
-            retry: 2,
+            retry: 1,
             form: 'ticket',
             fieldId: "text_field",
         }
@@ -76,9 +78,49 @@ describe("Test dialog engine", () => {
         dialog.reply = "San Francisco";
         results = dialog.run();
         expect(dialog.step).toBe(3);
-        expect(results.text).toBe("");
+        expect(results.text).toBe("Thank you");
         expect(dialog.retry).toBe(0);
         expect(dialog.isCompleted).toBe(true);
+        expect(dialog.errTag).toBe("");
+
+
+    });
+    test("It test errTag", async () => {
+        let results;
+        let dialog = new Dialog();
+        results = dialog.run();
+        // start message plus first question
+        expect(results.text).toBe("Start message\nWhat's your name?");
+        // first answer
+        dialog.reply = "john";
+        // second question
+        results = dialog.run();
+        expect(dialog.step).toBe(1);
+        expect(results.text).toBe("What's your phone number?");
+        // second anser (invalid case)
+        dialog.reply = "nnn";
+        results = dialog.run();
+
+        expect(dialog.step).toBe(1);
+        expect(results.text).toBe("Invalid phone number\nWhat's your phone number?");
+        expect(dialog.retry).toBe(1);
+
+        // second answer (invalid)
+        dialog.reply = "nnn";
+        results = dialog.run();
+        expect(dialog.step).toBe(2);
+        expect(results.text).toBe("What's your destination?");
+        expect(results.keyboard).toStrictEqual([["sfo","sjc"],["tpe"]]);
+        expect(dialog.retry).toBe(0);
+        expect(dialog.isCompleted).toBe(false);
+        // third question
+        dialog.reply = "San Francisco";
+        results = dialog.run();
+        expect(dialog.step).toBe(3);
+        expect(results.text).toBe("Thank you");
+        expect(dialog.retry).toBe(0);
+        expect(dialog.isCompleted).toBe(true);
+        expect(dialog.errTag).toBe("need_clarification");
 
 
     });

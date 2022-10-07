@@ -20,6 +20,7 @@ class Dialog {
 		this.state.answer = [];
 		this.state.message = "";
 		this.state.reply = "";
+		this.state.errTag = "";
 		this.state.completed = false;
 	}
 
@@ -30,6 +31,7 @@ class Dialog {
 			answers: [],
 			message: "",
 			reply: "",
+			errTag: "",
 			form: false,
 			completed: false
 		}
@@ -65,6 +67,7 @@ class Dialog {
 					// this.state.message += question.errorMsg + "\n";
 					message.text = question.errorMsg + "\n";
 				} else {
+					this.state.errTag = qre.errTag;
 					this.state.answers[this.state.step] = {
 						form: question.form,
 						fieldId: question.fieldId,
@@ -114,6 +117,10 @@ class Dialog {
 		return this.state.answers;
 	}
 	
+	get errTag () {
+		return this.state.errTag;
+	}
+
 	get message () {
 		return this.state.message;
 	}

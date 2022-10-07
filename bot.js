@@ -138,9 +138,14 @@ class Bot {
         if (message.cmd == "newrequest") {
             if (dialog.isCompleted) {
                 dialog.form = "ticket";
+                dialog.clear();
+                ctx.setProp("threadHead", message.messageId);
             }
-            dialog.clear();
-            ctx.setProp("threadHead", message.messageId);
+        }
+        if (message.cmd == "start") {
+            if (!dialog.isCompleted) {
+                dialog.clear();
+            }
         }
         if (dialog.isCompleted) {
             debug("#processUpdate dialog completed dialog.state:", dialog.state);
@@ -159,11 +164,14 @@ class Bot {
             if (dialog.isCompleted) {
                 // send to Zendesk
                 let resp = await this.sendMessage(message.chatId, dialogMsg.text, replyKeyboard);
-                message = new Message(update.message, dialog.answers)
+                message = new Message(update.message, dialog.answers, this.combineTags(config.tags, dialog.errTag));
                 await this.addMedia(message);
                 ctx.setProp("threadHead", message.messageId);
                 message.threadHead = ctx.getProp("threadHead");
-                this.#zendesk.push(message);
+                let results = await this.#zendesk.push(message);
+                if (results.error) {
+                    throw new Error(results.error);
+                }
             } else {
                 let resp = await this.sendMessage(message.chatId, dialogMsg.text, replyKeyboard);
             }
@@ -187,6 +195,16 @@ class Bot {
             this.#updateId = latestUpdateId;
         }
         return Update.messageList(updates);
+    }
+
+    combineTags(tag1, tag2) {
+        debug("combineTag", {"tags": tag1, "errTag": tag2});
+        if (tag1 && tag2) {
+            return `${tag1},${tag2}`;
+        } else {
+            return tag1 || tag2;
+        }
+
     }
 
     get zendesk () {

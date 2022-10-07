@@ -62,6 +62,11 @@ if (config.useWebhook) {
 
 // Health check use
 app.get(`/`, async (req, res)=>{
+    res.sendStatus(200);
+});
+
+// benchmark
+app.get(`/benchmark`, async (req, res)=>{
     await session.retrieve("nothing");
     res.sendStatus(200);
 });

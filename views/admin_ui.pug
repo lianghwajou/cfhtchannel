@@ -14,6 +14,9 @@ html(lang='en')
             div.form-group
                 label(for='token') Telegram Token:
                 input#token.form-control(placeholder='token' name='token' value= token )
+            div.form-group
+                label(for='tags') Ticket Tags (comma separated):
+                input#tags.form-control(placeholder='tags' name='tags' value= tags )
             input#return_url.form-control(type='hidden', name='return_url' value= return_url)
             input#metadata.form-control(type='hidden', name='metadata' value= metadata)
             button.btn.btn-primary(type="submit") Submit
