@@ -102,7 +102,8 @@ class Bot {
         }
     }
 
-    async downloadFile (fileId) {
+    async downloadFile (photo) {
+        let fileId = photo.file_id;
         let url = `${this.#apiUrl}/getFile?file_id=${fileId}`;
         debug("download getFile url:", url);
         let getFileResp = await fetch(url);
@@ -114,14 +115,16 @@ class Bot {
         debug("download url:", fileUrl);
         const response = await fetch(fileUrl);
         if (!response.ok) throw new Error(`unexpected response ${response.statusText}`);
-        await streamPipeline(response.body, createWriteStream(`${config.mediaDir}/${filePath}`));
-        return `${config.mediaPath}${filePath}`;
+        let ext = filePath.split(".").pop();
+        let uniqueFilename = `${photo.file_unique_id}.${ext}`;
+        await streamPipeline(response.body, createWriteStream(`${config.mediaDir}/${uniqueFilename}`));
+        return `${config.mediaPath}${uniqueFilename}`;
     }
 
     async addMedia (message) {
         if (message.photo) {
             let photo = message.pickPhoto(message.photo);
-            let filePath = await this.downloadFile(photo.file_id);
+            let filePath = await this.downloadFile(photo);
             message.fileUrls = [filePath];
         }
 
