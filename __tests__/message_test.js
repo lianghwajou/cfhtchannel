@@ -21,6 +21,20 @@ const messageData = {
 	entities: []
 }
 
+const messageDataWithFirstnameOnly = {
+	message_id: 20,
+	from: {
+		id: 30,
+		first_name: "John",
+	},
+	date: new Date("2020-05-12T23:50:21.817Z"),
+	chat: {
+		id: 30
+	},
+	text: "test1",
+	entities: []
+}
+
 const answerData = [{
 	form: "user",
 	fieldId: "passport",
@@ -34,6 +48,15 @@ const answerData = [{
 ];
 
 describe("Test Message class", ()=>{
+	it("Test Message extUsername", () => {
+		Object.defineProperty(Config, "botId", {
+			get: jest.fn(()=>"7890")
+		});
+		const message = new Message(messageDataWithFirstnameOnly);
+
+		expect(message.extUsername).toBe("John ()");
+
+	});
 	it("Test Message getter/setter without answers", () => {
 		Object.defineProperty(Config, "botId", {
 			get: jest.fn(()=>"7890")

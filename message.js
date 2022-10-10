@@ -63,8 +63,9 @@ class Message {
 	}
 
 	get extUsername () {
+		let lastname = (this.lastname) ? this.lastname : "";
 		let username = (this.username) ? this.username : "";
-		return ((`${this.firstname} ${this.lastname}`).trim()+` (${username})`);
+		return ((`${this.firstname} ${lastname}`).trim()+` (${username})`);
 	}
 
 	get date () {
