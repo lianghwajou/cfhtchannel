@@ -72,6 +72,7 @@ class Bot {
         } catch(e) {
             res.sendStatus(503);
             console.error(e);
+            debug("botHandler Exception:", e);
         }
     }
 
