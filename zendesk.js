@@ -85,6 +85,7 @@ class Zendesk {
             }
         } catch (e) {
             console.error(e);
+            debug("pull Exception:", e);
         }
     }
 
@@ -103,6 +104,7 @@ class Zendesk {
             }
         } catch (e) {
             console.error(e);
+            debug("channelback Exception:", e);
         }
     }
 
@@ -129,6 +131,7 @@ class Zendesk {
             return data;
         } catch (e) {
             console.error(e);
+            debug("push Exception:", e);
         }
     }
 

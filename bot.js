@@ -132,6 +132,7 @@ class Bot {
     }
 
     async #processUpdate (update) {
+        if (!update.message) return;
         let message = new Message(update.message);
         let ctx = await this.#session.retrieve(message.extUserId);
         let dialog = ctx.getProp("dialog");
