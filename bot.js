@@ -3,6 +3,7 @@ const {createWriteStream} = require('node:fs');
 const {pipeline} = require('node:stream');
 const {promisify} = require('node:util');
 const fetch = require('node-fetch');
+const {checkStatus} = require("./fetch-error");
 const { Update } = require('./update');
 const { Message } = require('./message');
 const { Config } =  require('./config');
@@ -45,6 +46,7 @@ class Bot {
     async #setWebhook(domain, path) {
         let url = this.#apiUrl + '/setWebhook?' + "url=" + domain + path;
         let res = await fetch(url);
+        checkStatus(res);
         let status = await res.json();
         debug("setWebhook", {url, status});
     }
@@ -52,6 +54,7 @@ class Bot {
     async #deleteWebhook() {
         let url = this.#apiUrl + '/deleteWebhook';
         let res = await fetch(url);
+        checkStatus(res);
         let status = await res.json();
         debug("deleteWebhook", {url, status});
     }
@@ -89,6 +92,7 @@ class Bot {
         }
         debug("sendMessage url: ", url);
         let response = await fetch(url);
+        checkStatus(response);
         let data = await response.json();
         debug("sendMessage results", {data});
         if (data.ok) {
