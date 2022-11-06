@@ -1,4 +1,3 @@
-const questions = require("./questions.json");
 let questionnaire = undefined;
 
 class Survey{
@@ -19,10 +18,16 @@ class Survey{
 
 	processQuestions () {
 		try {
-			let questionnaire = require("./questions.json");
+			const questions_opts = require("./questions.json");
+			let questionnaire;
+			if (process.env.NODE_ENV == "dev") {
+				questionnaire = questions_opts.dev;
+			} else {
+				questionnaire = questions_opts.prod;
+			}
 			let questions = questionnaire.qns;
 			for (let question of questions) {
-				question.validation = new RegExp(question.validation);
+				question.validation = new RegExp(question.validation, "u");
 			}
 			return questionnaire;
 		} catch (e) {
