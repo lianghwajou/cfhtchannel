@@ -70,8 +70,8 @@ class Bot {
     async botHandler (req, res) {
         debug("botHandler req.body:", req.body);
         try {
-            res.sendStatus(200);
             await this.#processUpdate(req.body);
+            res.sendStatus(200);
         } catch(e) {
             res.sendStatus(503);
             console.error(e);
@@ -92,6 +92,7 @@ class Bot {
         }
         debug("sendMessage url: ", url);
         let response = await fetch(url);
+        debug("sendMessage response", {response});
         checkStatus(response);
         let data = await response.json();
         debug("sendMessage results", {data});
