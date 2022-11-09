@@ -138,7 +138,7 @@ class Bot {
 
     async #processUpdate (update) {
         if (!update.message) return;
-        let message = new Message(update.message);
+        let message = new Message(update.message, [], config.tags);
         let ctx = await this.#session.retrieve(message.extUserId);
         let dialog = ctx.getProp("dialog");
         if (!dialog) {
@@ -150,6 +150,8 @@ class Bot {
                 dialog.form = "ticket";
                 dialog.clear();
                 ctx.setProp("threadHead", message.messageId);
+            } else {
+                dialog.clear();
             }
         }
         if (message.cmd == "start") {

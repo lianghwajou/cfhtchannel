@@ -37,6 +37,10 @@ class Dialog {
 		}
 
 	}
+
+	generate_tags_from_contents(contents) {
+		return contents.replace(/[ ,()]/g, "_");
+	}
 	
 	run () {
 		let message = {
@@ -55,17 +59,22 @@ class Dialog {
 		if (this.state.reply) {
 			if (question.validation.test(this.state.reply)) {
 				// valid return 
+				let tags = "";
+				if (question.addTag) {
+					tags = this.generate_tags_from_contents(this.state.reply);
+				}
 				this.state.answers[this.state.step] = {
 					form: question.form,
 					fieldId: question.fieldId,
-					content: this.state.reply
+					content: this.state.reply,
+					tags: tags
 				};
 				this.nextStep(this.state);
 			} else {
 				if (this.state.retry < question.retry) {
 					this.nextTry(this.state);
 					// this.state.message += question.errorMsg + "\n";
-					message.text = question.errorMsg + "\n";
+					message.text = question.errorMsg + "\n\n";
 				} else {
 					this.state.errTag = qre.errTag;
 					this.state.answers[this.state.step] = {

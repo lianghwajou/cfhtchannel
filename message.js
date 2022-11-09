@@ -186,6 +186,7 @@ class Message {
 	processAnswers () {
 		this._userFields = [];
 		this._ticketFields = [];
+		let answerTagList= [];
 		if (this.answers) {
 	        for (let answer of this.answers) {
 	            switch(answer.form) {
@@ -200,11 +201,21 @@ class Message {
 	                    id: answer.fieldId,
 	                    value: answer.content                    
 	                });
+	                if (answer.tags) {
+	                	answerTagList.push(answer.tags);
+	                }
 	                break;
 	            }
 	        }
 
 		}
+		let answerTags = answerTagList.join();
+		if (this.tags && answerTags) {
+            this.tags = `${this.tags},${answerTags}`;
+        } else {
+            this.tags = this.tags || answerTags;
+        }
+
 		if (this.tags) {
 			this._ticketFields.push({
 				id: "tags",
