@@ -71,6 +71,7 @@ class Dialog {
 				};
 				this.nextStep(this.state);
 			} else {
+				debug(`run: validation failed question: ${question.name}, reply: ${this.state.reply}`);
 				if (this.state.retry < question.retry) {
 					this.nextTry(this.state);
 					// this.state.message += question.errorMsg + "\n";
