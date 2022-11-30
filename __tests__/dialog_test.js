@@ -64,7 +64,7 @@ describe("Test dialog engine", () => {
         results = dialog.run();
 
         expect(dialog.step).toBe(1);
-        expect(results.text).toBe("Invalid phone number\nWhat's your phone number?");
+        expect(results.text).toMatch(/Invalid phone number/);
         expect(dialog.retry).toBe(1);
         // second answer (valid)
         dialog.reply = "18000000000";
@@ -102,7 +102,7 @@ describe("Test dialog engine", () => {
         results = dialog.run();
 
         expect(dialog.step).toBe(1);
-        expect(results.text).toBe("Invalid phone number\nWhat's your phone number?");
+        expect(results.text).toMatch(/Invalid phone number/);
         expect(dialog.retry).toBe(1);
 
         // second answer (invalid)

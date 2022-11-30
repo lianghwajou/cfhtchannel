@@ -54,7 +54,9 @@ describe("Test Bot class", ()=>{
 			bot.sendMessage = jest.fn();
 			await bot.botHandler(req,res);
 			expect(zendesk.push).toHaveBeenCalled();
-			expect(zendesk.push).toHaveBeenCalledWith(new Message(req.body.message));
+			let m = new Message(req.body.message, []);
+			m.threadHead = undefined;
+			expect(zendesk.push).toHaveBeenCalledWith(m);
 		})
 		it("process update the first time", async ()=>{
 			let req = {
