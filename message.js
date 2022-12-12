@@ -69,7 +69,8 @@ class Message {
 	}
 
 	get date () {
-		return this.message.date;
+		// Telegam date is in second
+		return this.message.date*1000;
 	}
 
 	get dateISO () {
